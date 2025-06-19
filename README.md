@@ -3,9 +3,9 @@ Toto je rozpracovaný projekt
 
 | Téma                               | Tutoriál | Cvičení | Řešení | Poznámky z tabule |
 | ---------------------------------- | -------- | ------- | ------ | ----------------- |
-| Úvod do R                          | ❌        | ❌       | ❌      | ❌                 |
-| Základy programování v R           | ❌        | ❌       | ❌      | ❌                 |
-| Manipulace s daty pomocí tidyverse | ❌        | ❌       | ❌      | ❌                 |
+| Úvod do R                          | ✅        | ✅       | ✅      | ❌                 |
+| Základy programování v R           | ✅        | ✅       | ✅      | ❌                 |
+| Manipulace s daty pomocí tidyverse | ✅        | ✅       | ✅      | ❌                 |
 | Průzkumná analýza dat              | ❌        | ❌       | ❌      | ❌                 |
 | Odhad parametrů                    | ❌        | ❌       | ❌      | ❌                 |
 | Náhodná veličina                   | ❌        | ❌       | ❌      | ❌                 |
