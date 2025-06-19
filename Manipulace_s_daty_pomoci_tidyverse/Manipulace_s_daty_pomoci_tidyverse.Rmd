@@ -1,0 +1,1115 @@
+---
+title: "Manipulace s daty pomocí tidyverse"
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Práce s daty pomocí `tidyverse`
+
+`tidyverse` je sada balíčků v R určených pro datovou vědu. Všechny balíčky v `tidyverse` sdílejí společné principy, syntaxi a datové struktury, což umožňuje jejich snadné kombinování. `tidyverse` usnadňuje běžné úlohy jako manipulaci s daty, vizualizaci a analýzu.
+
+Balíčky v `tidyverse` zahrnují:
+- `readr`: import dat
+- `dplyr`: manipulace s daty
+- `tidyr`: úprava dat do „tidy“ formátu
+- `ggplot2`: vizualizace dat
+- `forcats`: práce s kategoriálními daty
+- `stringr`: práce s textem
+- `lubridate`: práce s datem a časem
+- `tibble`: moderní datové rámce
+- `purrr`: funkcionální programování
+
+Pro instalaci celého `tidyverse` použijte:
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+## Načítání dat ze souboru pomocí `readr`
+
+Balíček `readr` nabízí funkce pro import a export tabulkových dat v různých formátech, např. CSV, TSV nebo soubory s jinými oddělovači.
+
+```{bash}
+head iris.csv
+```
+
+CSV (comma-separated values) je běžný formát pro tabulková data. První řádek většinou obsahuje názvy sloupců, další řádky odpovídající data oddělená čárkami. Načteme tento dataset ze souboru `iris.csv` do R:
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+# načtení balíčku readr
+library(readr)
+# načtení CSV dat
+iris <- readr::read_csv("iris.csv")
+# zobrazíme prvních 5 řádků
+head(iris)
+```
+
+Další často používaný formát je TSV (tab-separated values), kde místo čárky sloupce odděluje tabulátor `\t`.
+
+```{r}
+# načtení TSV dat
+iris <- readr::read_tsv("iris.tsv")
+head(iris)
+```
+
+## Manipulace s daty pomocí `dplyr`
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+library(dplyr)
+```
+
+### 1. Filtrování řádků
+
+Vybereme pouze řádky, kde je druh `"setosa"`.
+
+```{r}
+setosa_iris <- iris %>% dplyr::filter(variety == "setosa")
+head(setosa_iris)
+```
+
+Operátor `%>%` (pipe) vyjadřuje posloupnost operací. Není nutné uvádět název balíčku, ale zde to děláme pro ukázku.
+
+### 2. Výběr sloupců
+
+Vybereme pouze sloupce sepal.length a sepal.width.
+
+```{r}
+sepal_data <- iris %>% dplyr::select(sepal.length, sepal.width)
+head(sepal_data)
+```
+
+### 3. Přidání nových sloupců
+
+Vytvoříme nový sloupec jako poměr délky a šířky okvětního lístku.
+
+```{r}
+iris <- iris %>% dplyr::mutate(petal.ratio = petal.length / petal.width)
+head(iris)
+```
+
+### 4. Shrnutí dat
+
+Spočítáme průměr a směrodatnou odchylku délky kalichu podle druhu.
+
+```{r}
+summary_stats <- iris %>%
+  dplyr::group_by(variety) %>%
+  dplyr::summarize(
+    mean_sepal.length = mean(sepal.length),
+    sd_sepal.length = sd(sepal.length)
+  )
+summary_stats
+```
+
+### 5. Řazení řádků
+
+Seřadíme data podle délky kalichu sestupně.
+
+```{r}
+sorted_iris <- iris %>% dplyr::arrange(desc(sepal.length))
+head(sorted_iris)
+```
+
+### 6. Skupinové shrnutí
+
+Pro každý druh spočítáme počet případů, kdy délka okvětního lístku > 4.
+
+```{r}
+count_petal_length <- iris %>%
+  dplyr::filter(petal.length > 4) %>%
+  dplyr::group_by(variety) %>%
+  dplyr::summarize(count = n())
+count_petal_length
+```
+
+### 7. Přejmenování sloupců
+
+Přejmenujeme sloupce sepal.length → sepal\_length a sepal.width → sepal\_width.
+
+```{r}
+iris <- iris %>% dplyr::rename(
+  sepal_length = sepal.length,
+  sepal_width = sepal.width
+)
+colnames(iris)
+```
+
+### 8. Filtrování a přidání sloupce
+
+Vybereme pouze druh `"virginica"` a přidáme sloupec, který říká, zda je délka kalichu > 6.
+
+```{r}
+virginica_iris <- iris %>%
+  dplyr::filter(variety == "virginica") %>%
+  dplyr::mutate(sepal_length_over_6 = sepal_length > 6)
+head(virginica_iris)
+```
+
+### 9. Náhodný výběr řádků
+
+Náhodně vybereme 10 řádků z datasetu.
+
+```{r}
+sampled_iris <- iris %>% dplyr::sample_n(10)
+show(sampled_iris)
+```
+
+### 10. Kombinace více funkcí `dplyr`
+
+Vytvoříme nový dataset s druhem `"versicolor"`, vybereme sloupce petal.length a petal.width a seřadíme podle šířky okvětního lístku vzestupně.
+
+```{r}
+versicolor_sorted <- iris %>%
+  dplyr::filter(variety == "versicolor") %>%
+  dplyr::select(petal.length, petal.width) %>%
+  dplyr::arrange(petal.width)
+head(versicolor_sorted)
+```
+
+## Úprava dat pomocí `tidyr`
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyr)
+```
+
+#### **Široký formát (Wide Format)**
+
+V širokém formátu je každá proměnná rozložena do samostatného sloupce a každé pozorování (nebo jednotka) je reprezentováno jedním řádkem.
+
+**Příklad s datasetem `iris`:**
+
+| Druh       | Délka kalichu | Šířka kalichu | Délka okvětního lístku | Šířka okvětního lístku |
+| ---------- | ------------- | ------------- | ---------------------- | ---------------------- |
+| setosa     | 5.1           | 3.5           | 1.4                    | 0.2                    |
+| versicolor | 7.0           | 3.2           | 4.7                    | 1.4                    |
+| virginica  | 6.3           | 3.3           | 6.0                    | 2.5                    |
+
+Každý sloupec zde reprezentuje jinou proměnnou a každý řádek jedno pozorování.
+
+#### **Dlouhý formát (Long Format)**
+
+V dlouhém formátu každý řádek odpovídá jednomu měření dané proměnné – máme jeden sloupec s názvem proměnné a druhý s hodnotou.
+
+**Příklad převodu `iris` do dlouhého formátu:**
+
+| Druh       | Měření          | Hodnota |
+| ---------- | --------------- | ------- |
+| setosa     | Délka kalichu   | 5.1     |
+| setosa     | Šířka kalichu   | 3.5     |
+| setosa     | Délka okvětního | 1.4     |
+| setosa     | Šířka okvětního | 0.2     |
+| versicolor | Délka kalichu   | 7.0     |
+| versicolor | Šířka kalichu   | 3.2     |
+| ...        | ...             | ...     |
+
+Proměnné `Sepal.Length`, `Sepal.Width`, `Petal.Length`, `Petal.Width` jsou spojeny do jednoho sloupce `Measurement` a hodnoty jsou v `Value`. Každá unikátní kombinace `Species` a `Measurement` tvoří jeden řádek.
+
+#### **Rozdíly a použití**
+
+* **Široký formát:**
+
+  * Přehledný při malém počtu proměnných.
+  * Každý řádek = jedna jednotka.
+  * Vhodné pro některé modely nebo přirozeně strukturovaná data.
+
+* **Dlouhý formát:**
+
+  * Efektivní pro manipulaci, agregaci, vizualizaci (`ggplot2`).
+  * Výhodný při více měřeních na jednotku nebo větším počtu proměnných.
+  * Snazší filtrování, seskupování, použití funkcí.
+
+### 1. Převod na dlouhý formát (Pivoting Longer)
+
+Převeďte dataset do dlouhého formátu s proměnnými `Measurement` a `Value`.
+
+```{r}
+# sjednocení názvů sloupců
+iris <- iris %>% dplyr::rename(petal_length = petal.length, petal_width = petal.width, petal_ratio = petal.ratio)
+
+# převod do dlouhého formátu
+iris_long <- iris %>%
+  tidyr::pivot_longer(
+    cols = c(sepal_length, sepal_width, petal_length, petal_width),
+    names_to = "Measurement",
+    values_to = "Value"
+  )
+
+head(iris_long)
+```
+
+### 2. Převod zpět do širokého formátu (Pivoting Wider)
+
+Převeďte dataset zpět do původního širokého formátu.
+
+```{r}
+iris_wide <- iris_long %>%
+  tidyr::pivot_wider(
+    names_from = Measurement,
+    values_from = Value
+  )
+head(iris_wide)
+```
+
+### 3. Rozdělení sloupce (Separating Columns)
+
+Rozdělte sloupec `variety` na dva nové: `genus` a `species_type`. Předpokládejte, že první 4 znaky tvoří rod (`genus`).
+
+```{r}
+iris_separated <- iris %>%
+  tidyr::separate(variety, into = c("genus", "species_type"), sep = 4)
+head(iris_separated)
+```
+
+### 4. Spojení sloupců (Uniting Columns)
+
+Spojte sloupce `sepal_length` a `sepal_width` do nového sloupce `sepal_dimensions`, hodnoty oddělte podtržítkem.
+
+```{r}
+iris_united <- iris %>%
+  tidyr::unite(sepal_dimensions, sepal_length, sepal_width, sep = "_")
+head(iris_united)
+```
+
+### 5. Odstranění NA hodnot (Dropping NA Values)
+
+NA hodnoty značí chybějící data. Nejprve vytvoříme NAs v datech, pak odstraníme řádky, které je obsahují.
+
+```{r}
+set.seed(42) # pro reprodukovatelnost
+
+# přidání NA hodnot do sloupce sepal_length
+iris_na <- iris %>%
+  dplyr::mutate(sepal_length = replace(sepal_length, sample(1:n(), 10), NA))
+
+# zobrazíme řádky s NA
+iris_na %>% dplyr::filter(is.na(sepal_length))
+```
+
+```{r}
+# odstranění řádků s NA
+iris_no_na <- iris_na %>% tidyr::drop_na()
+
+# ověření, že řádky s NA byly odstraněny
+iris_no_na %>% dplyr::filter(is.na(sepal_length))
+```
+
+### 6. Nahrazení NA hodnot (Replacing NA Values)
+
+Nahraďte NA hodnoty v `sepal_length` průměrnou hodnotou ze stejného sloupce (bez NA).
+
+```{r}
+# výpočet průměru sepal_length bez NA
+mean_sepal_length <- mean(iris_na$sepal_length, na.rm = TRUE)
+
+# nahrazení NA průměrem
+iris_replaced_na <- iris_na %>%
+  tidyr::replace_na(list(sepal_length = mean_sepal_length))
+
+# ověření, že byly hodnoty nahrazeny
+iris_replaced_na %>% dplyr::filter(is.na(sepal_length))
+```
+
+
+## Vizualizace dat pomocí `ggplot2`
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+library(ggplot2)
+```
+
+### 1. Základní bodový graf (Scatter Plot)
+
+Vytvořte bodový graf závislosti délky a šířky kalichu, body obarvěte podle druhu (`variety`).
+
+```{r}
+ggplot(iris, aes(x = sepal_length, y = sepal_width, color = variety)) + geom_point()
+```
+
+### 2. Přidání titulku a popisků os
+
+Upravte bodový graf tak, aby obsahoval název a popisky os x a y.
+
+```{r}
+ggplot(iris, aes(x = sepal_length, y = sepal_width, color = variety)) +
+  geom_point() +
+  ggtitle("Délka vs. šířka kalichu") +
+  xlab("Délka kalichu (cm)") +
+  ylab("Šířka kalichu (cm)")
+```
+
+### 3. Histogram
+
+Vytvořte histogram délky okvětního lístku a použijte různé barvy pro jednotlivé druhy.
+
+```{r}
+ggplot(iris, aes(x = petal_length, fill = variety)) +
+  geom_histogram(position = "dodge", bins = 30) +
+  xlab("Délka okvětního lístku (cm)") +
+  ylab("Počet") +
+  ggtitle("Histogram délky okvětního lístku podle druhu")
+```
+
+### 4. Krabicový graf (Box Plot)
+
+Vytvořte krabicový graf pro délku kalichu podle druhu.
+
+```{r}
+ggplot(iris, aes(x = variety, y = sepal_length, fill = variety)) +
+  geom_boxplot() +
+  ggtitle("Krabicový graf délky kalichu podle druhu") +
+  xlab("Druh") +
+  ylab("Délka kalichu (cm)")
+```
+
+### 5. Dělení grafů pomocí `facet_grid`
+
+Vytvořte samostatné bodové grafy délky vs. šířky okvětního lístku pro každý druh.
+
+```{r}
+ggplot(iris, aes(x = petal_length, y = petal_width)) +
+  geom_point() +
+  facet_grid(. ~ variety) +
+  ggtitle("Rozměry okvětního lístku podle druhu") +
+  xlab("Délka okvětního lístku (cm)") +
+  ylab("Šířka okvětního lístku (cm)")
+```
+
+### 6. Hustotní graf (Density Plot)
+
+Vytvořte hustotní graf šířky kalichu pro každý druh s odlišnými barvami.
+
+```{r}
+ggplot(iris, aes(x = sepal_width, fill = variety)) +
+  geom_density(alpha = 0.5) + # parametr alpha reguluje průhlednost barev (0 = průhledné, 1 = neprůhledné)
+  ggtitle("Hustotní graf šířky kalichu podle druhu") +
+  xlab("Šířka kalichu (cm)")
+```
+
+### 7. Spojnicový graf (Line Plot)
+
+Vytvořte spojnicový graf průměrné délky okvětního lístku podle druhu.
+
+```{r}
+iris_avg <- iris %>%
+  group_by(variety) %>%
+  summarize(avg_petal_length = mean(petal_length))
+
+ggplot(iris_avg, aes(x = variety, y = avg_petal_length, group = 1)) +
+  geom_line() +
+  geom_point() +
+  ggtitle("Průměrná délka okvětního lístku podle druhu") +
+  xlab("Druh") +
+  ylab("Průměrná délka (cm)")
+```
+
+### 8. Sloupcový graf (Bar Chart)
+
+Vytvořte sloupcový graf počtu pozorování pro každý druh.
+
+```{r}
+ggplot(iris, aes(x = variety, fill = variety)) +
+  geom_bar() +
+  ggtitle("Počet pozorování podle druhu") +
+  xlab("Druh") +
+  ylab("Počet")
+```
+
+### 9. Úprava vzhledu grafu (Theme)
+
+Upravte bodový graf délky kalichu vs. délky okvětního lístku tak, aby používal minimalistický styl a legenda byla umístěna dole.
+
+```{r}
+ggplot(iris, aes(x = sepal_length, y = petal_length, color = variety)) +
+  geom_point() +
+  theme_minimal() +
+  theme(legend.position = "bottom") +
+  ggtitle("Délka kalichu vs. délka okvětního lístku") +
+  xlab("Délka kalichu (cm)") +
+  ylab("Délka okvětního lístku (cm)")
+```
+
+
+## Práce s kategoriálními daty pomocí `forcats`
+
+V této části použijeme dataset `diamonds`, který obsahuje několik kategoriálních sloupců: `cut`, `color`, `clarity`.
+
+```{r}
+library(ggplot2)
+diamonds$color
+```
+
+### 1. Přeuspořádání úrovní faktoru podle mediánu ceny
+
+Přeuspořádejte úrovně faktoru `cut` podle mediánu ceny (`price`) v sestupném pořadí.
+
+```{r}
+levels(diamonds$cut)
+
+diamonds$cut <- forcats::fct_reorder(diamonds$cut, diamonds$price, .fun = median, .desc = TRUE)
+
+levels(diamonds$cut)
+```
+
+### 2. Sloučení méně častých úrovní v `color`
+
+Sloučte méně časté úrovně faktoru `color` do kategorie "Other", přičemž ponechte pouze 4 nejčastější barvy.
+
+```{r}
+levels(diamonds$color)
+
+diamonds$color <- forcats::fct_lump_n(diamonds$color, n = 4)
+
+levels(diamonds$color)
+```
+
+### 3. Sloučení úrovní faktoru `clarity`
+
+Spojte úrovně faktoru `clarity` do širších kategorií:
+
+* "Low" pro I1, SI2, SI1
+* "Medium" pro VS2, VS1
+* "High" pro VVS2, VVS1, IF
+
+```{r}
+levels(diamonds$clarity)
+
+diamonds$clarity <- forcats::fct_collapse(diamonds$clarity,
+                                 Low = c("I1", "SI2", "SI1"),
+                                 Medium = c("VS2", "VS1"),
+                                 High = c("VVS2", "VVS1", "IF"))
+
+levels(diamonds$clarity)
+```
+
+### 4. Přejmenování úrovní faktoru
+
+Přejmenujte úrovně faktoru `cut` na srozumitelnější názvy:
+
+* "Fair" → "Fair Cut"
+* "Good" → "Good Cut"
+* "Very Good" → "Very Good Cut"
+* "Premium" → "Premium Cut"
+* "Ideal" → "Ideal Cut"
+
+```{r}
+diamonds$cut <- forcats::fct_recode(diamonds$cut,
+                           "Fair Cut" = "Fair",
+                           "Good Cut" = "Good",
+                           "Very Good Cut" = "Very Good",
+                           "Premium Cut" = "Premium",
+                           "Ideal Cut" = "Ideal")
+
+levels(diamonds$cut)
+```
+
+### 5. Obrácení pořadí úrovní
+
+Obraťte pořadí úrovní faktoru `clarity`.
+
+```{r}
+levels(diamonds$clarity)
+
+diamonds$clarity <- forcats::fct_rev(diamonds$clarity)
+
+levels(diamonds$clarity)
+```
+
+### 6. Odstranění nepoužitých úrovní
+
+Vytvořte podmnožinu datasetu `diamonds`, která obsahuje pouze řezy `Premium` a `Ideal`, a poté odstraňte nepoužité úrovně faktoru `cut`.
+
+```{r}
+diamonds_subset <- diamonds %>%
+  dplyr::filter(cut %in% c("Premium", "Ideal"))
+
+diamonds_subset$cut <- forcats::fct_drop(diamonds_subset$cut)
+
+levels(diamonds_subset$cut)
+```
+
+### 7. Převod číselné proměnné na faktor
+
+Převeďte proměnnou `carat` na kategoriální faktor podle velikostních intervalů:
+
+* 0.0–0.5 ct
+* 0.5–1.0 ct
+* 1.0–1.5 ct
+* 1.5–2.0 ct
+* nad 2.0 ct
+
+```{r}
+diamonds$carat_bin <- cut(diamonds$carat, 
+                          breaks = c(0, 0.5, 1, 1.5, 2, Inf), 
+                          labels = c("0-0.5", "0.5-1.0", "1.0-1.5", "1.5-2.0", "2.0+"))
+
+levels(diamonds$carat_bin)
+```
+
+## Práce s textem pomocí `stringr`
+
+```{r}
+library(stringr)
+```
+
+### 1. Detekce vzorů v řetězcích
+
+Najděte všechny řádky, kde sloupec `cut` obsahuje podřetězec "Good".
+
+```{r}
+good_cut_diamonds <- diamonds[stringr::str_detect(diamonds$cut, "Good"), ]
+head(good_cut_diamonds)
+```
+
+### 2. Extrakce části řetězce
+
+Vytvořte vektor ID ve formátu `"Diamond_ID-XXXXX"` a extrahujte pouze číselnou část.
+
+```{r}
+diamond_ids <- str_c("Diamond_ID-", rownames(diamonds))
+extracted_ids <- stringr::str_extract(diamond_ids, "\\d+")
+head(extracted_ids)
+```
+
+### 3. Nahrazení podřetězců
+
+Nahraďte všechna výskyty "Good" ve sloupci `cut` slovem "Decent".
+
+```{r}
+head(diamonds$cut)
+diamonds$cut <- stringr::str_replace(diamonds$cut, "Good", "Decent")
+head(diamonds$cut)
+```
+
+### 4. Rozdělení řetězců
+
+Rozdělte řetězce typu `"1.5 carats"` na číselnou hodnotu a jednotku.
+
+```{r}
+carat_strings <- c("1.5 carats", "2.0 carats", "0.9 carats")
+split_carat <- stringr::str_split(carat_strings, " ", simplify = TRUE)
+carat_values <- as.numeric(split_carat[, 1])
+carat_units <- split_carat[, 2]
+
+head(carat_values)
+head(carat_units)
+```
+
+### 5. Délka řetězců
+
+Spočítejte počet znaků v každé úrovni faktoru `cut`.
+
+```{r}
+cut_lengths <- stringr::str_length(diamonds$cut)
+head(cut_lengths)
+```
+
+### 6. Spojování řetězců
+
+Spojte hodnoty ze sloupců `cut`, `color`, `clarity` do jednoho textového identifikátoru odděleného pomlčkami.
+
+```{r}
+diamond_id <- stringr::str_c(diamonds$cut, diamonds$color, diamonds$clarity, sep = "-")
+head(diamond_id)
+```
+
+### 7. Detekce číslic
+
+Zjistěte, které řetězce ve vektoru obsahují číslice.
+
+```{r}
+mixed_strings <- c("carat 2.5", "weight", "price $500", "value 1000")
+contains_digits <- stringr::str_detect(mixed_strings, "\\d")
+contains_digits
+```
+
+### 8. Ořezání mezer
+
+Odstraňte počáteční a koncové mezery ve vektoru popisů diamantů.
+
+```{r}
+diamond_descriptions <- c("  Ideal Cut  ", "  Premium Quality ", "Fair Cut ")
+trimmed_descriptions <- stringr::str_trim(diamond_descriptions)
+trimmed_descriptions
+```
+
+### 9. Počet výskytů znaku
+
+Spočítejte, kolikrát se vyskytuje písmeno `"e"` ve sloupci `cut` v celém datasetu.
+
+```{r}
+e_count <- stringr::str_count(diamonds$cut, "e")
+total_e_count <- sum(e_count)
+total_e_count
+```
+
+### 10. Opakování řetězce
+
+Vytvořte řetězec, který opakuje slovo `"Diamond"` pětkrát.
+
+```{r}
+repeated_string <- stringr::str_dup("Diamond", 5)
+repeated_string
+```
+
+### 11. Změna velikosti písmen
+
+Převeďte obsah sloupce `color` na velká písmena.
+
+```{r}
+head(diamonds$color)
+diamonds$color <- stringr::str_to_upper(diamonds$color)
+head(diamonds$color)
+```
+
+### 12. Výběr části řetězce
+
+Vezměte první tři znaky každé hodnoty ve sloupci `clarity`.
+
+```{r}
+clarity_subset <- stringr::str_sub(diamonds$clarity, 1, 3)
+head(clarity_subset)
+```
+
+### 13. Doplňování řetězců nulami
+
+Vytvořte ID diamantů a doplňte je zleva nulami tak, aby měly všechna ID pět číslic.
+
+```{r}
+diamond_ids <- stringr::str_pad(row.names(diamonds), width = 5, pad = "0")
+head(diamond_ids)
+```
+
+
+## Práce s datem a časem pomocí `lubridate`
+
+```{r}
+library(lubridate)
+```
+
+### 1. Parsování dat
+
+Převeďte řetězec `"2023-08-15"` na objekt typu datum.
+
+```{r}
+date <- lubridate::ymd("2023-08-15")
+date
+```
+
+### 2. Získání komponent datumu
+
+Z datumu `"2024-12-25"` získejte rok, měsíc a den.
+
+```{r}
+date <- lubridate::ymd("2024-12-25")
+year <- lubridate::year(date)
+month <- lubridate::month(date)
+day <- lubridate::day(date)
+
+year
+month
+day
+```
+
+### 3. Práce s různými formáty dat
+
+Načtěte datum `"15-August-2023"` jako objekt typu datum.
+
+```{r}
+date <- lubridate::dmy("15-August-2023")
+date
+```
+
+### 4. Přičítání a odečítání časových intervalů
+
+Přičtěte 3 měsíce a odečtěte 10 dní od datumu `"2023-01-01"`.
+
+```{r}
+date <- lubridate::ymd("2023-01-01")
+date_plus_3_months <- date %m+% months(3)
+date_minus_10_days <- date - days(10)
+
+date_plus_3_months
+date_minus_10_days
+```
+
+### 5. Výpočet rozdílu mezi daty
+
+Spočítejte počet dní mezi `"2023-01-01"` a `"2024-01-01"`.
+
+```{r}
+date1 <- lubridate::ymd("2023-01-01")
+date2 <- lubridate::ymd("2024-01-01")
+days_diff <- as.numeric(difftime(date2, date1, units = "days"))
+
+days_diff
+```
+
+### 6. Práce s datem a časem
+
+Vytvořte objekt `datetime` pro `"2023-08-15 12:34:56"`.
+
+```{r}
+datetime <- lubridate::ymd_hms("2023-08-15 12:34:56")
+datetime
+```
+
+### 7. Získání komponent času
+
+Z objektu `"2023-08-15 12:34:56"` získejte hodinu, minutu a sekundu.
+
+```{r}
+datetime <- lubridate::ymd_hms("2023-08-15 12:34:56")
+hour <- lubridate::hour(datetime)
+minute <- lubridate::minute(datetime)
+second <- lubridate::second(datetime)
+
+hour
+minute
+second
+```
+
+### 8. Zaokrouhlení dat
+
+Zaokrouhlete čas `"2023-08-15 12:34:56"` na celé hodiny.
+
+```{r}
+datetime <- lubridate::ymd_hms("2023-08-15 12:34:56")
+rounded_datetime <- lubridate::round_date(datetime, unit = "hour")
+
+rounded_datetime
+```
+
+### 9. Zjištění dne v týdnu
+
+Zjistěte den v týdnu pro datum `"2023-08-15"`.
+
+```{r}
+date <- lubridate::ymd("2023-08-15")
+day_of_week <- lubridate::wday(date, label = TRUE)
+
+day_of_week
+```
+
+### 10. Převod časového pásma
+
+Převeďte čas `"2023-08-15 12:34:56"` z UTC na časové pásmo `"America/New_York"`.
+
+```{r}
+datetime_utc <- lubridate::ymd_hms("2023-08-15 12:34:56", tz = "UTC")
+datetime_ny <- lubridate::with_tz(datetime_utc, tzone = "America/New_York")
+
+datetime_ny
+```
+
+## Moderní práce s datovými rámci pomocí `tibble`
+
+```{r}
+library(tibble)
+```
+
+### 1. Vytvoření jednoduchého tibble
+
+Vytvořte tibble se třemi sloupci: `Name` (text), `Age` (číslo), `Height` (číslo).
+
+```{r}
+people <- tibble::tibble(
+  Name = c("Alice", "Bob", "Charlie"),
+  Age = c(25, 30, 35),
+  Height = c(160, 175, 168)
+)
+
+people
+```
+
+### 2. Přidání nového sloupce
+
+Přidejte nový sloupec `Weight` do tibble `people`.
+
+```{r}
+people <- people %>%
+  dplyr::mutate(Weight = c(55, 70, 68))
+
+people
+```
+
+### 3. Převod `data.frame` na `tibble`
+
+Převeďte vestavěný datový rámec `mtcars` na `tibble`.
+
+```{r}
+mtcars_tibble <- tibble::as_tibble(mtcars)
+mtcars_tibble
+```
+
+### 4. Přístup ke sloupci v `tibble`
+
+Získejte sloupec `mpg` z `mtcars_tibble` pomocí operátoru `$`.
+
+```{r}
+mpg_column <- mtcars_tibble$mpg
+mpg_column
+```
+
+### 5. Přístup k řádkům v `tibble`
+
+Zobrazte prvních 5 řádků tibble `mtcars_tibble`.
+
+```{r}
+first_five_rows <- mtcars_tibble[1:5, ]
+first_five_rows
+```
+
+### 6. Vytvoření tibble s různými typy dat
+
+Vytvořte tibble s datem, logickou a textovou proměnnou.
+
+```{r}
+mixed_tibble <- tibble::tibble(
+  Date = as.Date(c("2023-01-01", "2023-01-02", "2023-01-03")),
+  Logical = c(TRUE, FALSE, TRUE),
+  Category = c("A", "B", "C")
+)
+
+mixed_tibble
+```
+
+### 7. Přejmenování sloupců
+
+Přejmenujte sloupce v `people` na `Full_Name`, `Age_Years`, `Height_cm`.
+
+```{r}
+people <- people %>%
+  dplyr::rename(
+    Full_Name = Name,
+    Age_Years = Age,
+    Height_cm = Height
+  )
+
+people
+```
+
+### 8. Filtrování a výběr sloupců pomocí `filter` a `select`
+
+Vyberte z `mtcars_tibble` pouze řádky, kde je `mpg` > 20, a zobrazte sloupce `mpg`, `hp`, `wt`.
+
+```{r}
+filtered_tibble <- mtcars_tibble %>%
+  dplyr::filter(mpg > 20) %>%
+  dplyr::select(mpg, hp, wt)
+
+filtered_tibble
+```
+
+
+## Funkcionální programování s `purrr`
+
+```{r}
+library(purrr)
+```
+
+### 1. Aplikace funkce na každý prvek seznamu
+
+Vytvořte seznam číselných vektorů a aplikujte funkci `mean` (průměr) na každý vektor.
+
+```{r}
+num_list <- list(c(1, 2, 3), c(4, 5, 6, 7), c(8, 9))
+means <- purrr::map_dbl(num_list, mean)
+
+means
+```
+
+### 2. Mapování přes více seznamů
+
+Máte-li dva seznamy číselných vektorů, sečtěte odpovídající prvky každého vektoru.
+
+```{r}
+list1 <- list(c(1, 2, 3), c(4, 5))
+list2 <- list(c(10, 20, 30), c(40, 50))
+sums <- purrr::map2(list1, list2, ~ .x + .x)
+
+sums
+```
+
+### 3. Extrakce prvků ze seznamu seznamů
+
+Získejte první prvek z každého podseznamu v seznamu seznamů.
+
+```{r}
+nested_list <- list(
+  list(a = 1, b = 2),
+  list(a = 3, b = 4),
+  list(a = 5, b = 6)
+)
+first_elements <- purrr::map(nested_list, "a")
+
+first_elements
+```
+
+### 4. Bezpečné použití funkcí
+
+Použijte `safely` k aplikaci funkce, která může selhat (např. dělení), na seznam hodnot s ošetřením chyb.
+
+```{r}
+safe_divide <- safely(~ 10 / .x)
+
+results <- purrr::map(list(2, 0, 5), safe_divide)
+results
+```
+
+### 5. Rozbalení seznamu seznamů
+
+Rozbalte seznam seznamů do jednoho seznamu.
+
+```{r}
+nested_list <- list(list(1, 2), list(3, 4), list(5, 6))
+flat_list <- purrr::flatten(nested_list)
+
+flat_list
+```
+
+### 6. Vytvoření `tibble` ze seznamu
+
+Vytvořte `tibble` ze seznamu, kde každý prvek je vektor stejné délky.
+
+```{r}
+list_data <- list(
+  Name = c("Alice", "Bob", "Charlie"),
+  Age = c(25, 30, 35),
+  Height = c(160, 175, 168)
+)
+
+people_tibble <- tibble::as_tibble(list_data)
+people_tibble
+```
+
+### 7. Aplikace funkce na více argumentů
+
+Máte-li dva číselné vektory, aplikujte funkci, která vypočítá maximum každé dvojice hodnot.
+
+```{r}
+vec1 <- c(1, 4, 3)
+vec2 <- c(2, 3, 5)
+
+max_values <- map2_dbl(vec1, vec2, max)
+max_values
+```
+
+### 8. Aplikace funkcí na sloupce datového rámce
+
+Aplikujte funkci `mean` na každý sloupec datového rámce `mtcars`.
+
+```{r}
+mtcars_means <- purrr::map_dbl(mtcars, mean)
+
+mtcars_means
+```
+
+### 9. Podmíněná aplikace funkce
+
+Aplikujte funkci pouze na ty prvky seznamu, které splňují určitou podmínku (např. větší než 3).
+
+```{r}
+num_list <- list(1, 4, 3, 6, 2)
+
+results <- purrr::map_if(num_list, ~ .x > 3, ~ .x * 2)
+results
+```
+
+### 10. Redukce seznamu na jednu hodnotu
+
+Použijte `reduce` k výpočtu kumulativního součinu hodnot v seznamu.
+
+```{r}
+num_list <- list(1, 2, 3, 4, 5)
+
+product <- purrr::reduce(num_list, `*`)
+product
+```
+
+## Cvičení k `purrr`
+
+```{r}
+library(purrr)
+```
+
+### 1. Aplikace funkce na každý prvek seznamu
+
+Vytvoř seznam číselných vektorů a spočítej průměr každého z nich.
+
+```{r}
+# TODO sem napiš svůj kód
+```
+
+### 2. Mapování přes více seznamů
+
+Sečti odpovídající prvky dvou seznamů číselných vektorů.
+
+```{r}
+# TODO sem napiš svůj kód
+```
+
+### 3. Extrakce prvků ze seznamu seznamů
+
+Získej první prvek z každého podseznamu.
+
+```{r}
+# TODO sem napiš svůj kód
+```
+
+### 4. Bezpečné použití funkcí
+
+Bezpečně aplikuj dělení na seznam čísel (např. dělení 10 různými hodnotami, včetně nuly).
+
+```{r}
+# TODO sem napiš svůj kód
+```
+
+### 5. Rozbalení seznamu seznamů
+
+Rozbal seznam složený ze tří podseznamů do jednoho.
+
+```{r}
+# TODO sem napiš svůj kód
+```
+
+### 6. Vytvoření tibble ze seznamu
+
+Vytvoř `tibble`, kde každý prvek seznamu je vektor stejné délky.
+
+```{r}
+# TODO sem napiš svůj kód
+```
+
+### 7. Aplikace funkce na dvojice prvků
+
+Pro dvě číselná pole zjisti maxima jednotlivých dvojic.
+
+```{r}
+# TODO sem napiš svůj kód
+```
+
+### 8. Aplikace na sloupce datového rámce
+
+Aplikuj `mean()` na všechny sloupce `mtcars`.
+
+```{r}
+# TODO sem napiš svůj kód
+```
+
+### 9. Podmíněná aplikace funkce
+
+Vynásob 2 pouze ta čísla v seznamu, která jsou větší než 3.
+
+```{r}
+# TODO sem napiš svůj kód
+```
+
+### 10. Redukce seznamu na jednu hodnotu
+
+Spočítej součin všech hodnot v seznamu pomocí `reduce()`.
+
+```{r}
+# TODO sem napiš svůj kód
+```
+

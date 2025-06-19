@@ -1,0 +1,240 @@
+---
+title: 'Manipulace s daty pomocí tidyverse: Cvičení'
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Cvičení
+
+## Načítání dat
+
+### Cvičení 1: Načtení dat
+
+**Úkol:** Použij `read_csv()` k načtení datového souboru `penguins.csv` a zobraz prvních 6 řádků.
+
+```{r}
+library(readr)
+
+penguins <- read_csv("penguins.csv")
+head(penguins, 6)
+```
+
+## Instalace celého balíčku `tidyverse`
+
+```{r}
+install.packages("tidyverse")
+library(tidyverse)
+```
+
+## Manipulace s daty pomocí `dplyr`
+
+### Cvičení 2: Filtrování řádků podle druhu
+
+**Úkol:** Filtrování datasetu tak, aby obsahoval pouze řádky, kde je druh `"Adelie"`.
+
+```{r}
+penguins %>% filter(species == "Adelie")
+```
+
+### Cvičení 3: Výběr relevantních sloupců
+
+**Úkol:** Vyber sloupce `island`, `bill_length_mm` a `flipper_length_mm`.
+
+```{r}
+penguins %>% select(c("island", "bill_length_mm", "flipper_length_mm"))
+```
+
+### Cvičení 4: Přidání nového sloupce
+
+**Úkol:** Vytvoř nový sloupec, který vypočítá poměr `bill_length_mm` ku `flipper_length_mm`.
+
+```{r}
+penguins %>% mutate(bill_to_flipper_ratio = bill_length_mm / flipper_length_mm)
+```
+
+### Cvičení 5: Shrnutí dat podle druhu
+
+**Úkol:** Spočítej průměr a směrodatnou odchylku sloupce `flipper_length_mm` pro každý druh.
+
+```{r}
+penguins %>% group_by(species) %>% summarize(mean_flipper = mean(flipper_length_mm, na.rm = TRUE),
+                                             sd_flipper = sd(flipper_length_mm, na.rm = TRUE))
+```
+
+### Cvičení 6: Seřazení dat podle délky zobáku
+
+**Úkol:** Seřaď data podle `bill_length_mm` sestupně.
+
+```{r}
+penguins %>% arrange(desc(bill_length_mm))
+```
+
+### Cvičení 7: Seskupení a shrnutí podle druhu
+
+**Úkol:** Pro každý druh spočítej, kolik jedinců má `bill_length_mm` větší než 40.
+
+```{r}
+penguins %>% group_by(species) %>% filter(bill_length_mm > 40) %>% count()
+```
+
+```{r}
+penguins %>%
+  group_by(species) %>%
+  summarise(
+    count_bill_gt40 = sum(bill_length_mm > 40, na.rm = TRUE)
+  )
+```
+
+### Cvičení 8: Přejmenování sloupců
+
+**Úkol:** Přejmenuj sloupce `bill_length_mm` na `bill_length` a `flipper_length_mm` na `flipper_length`.
+
+```{r}
+penguins %>% rename(bill_length = bill_length_mm, flipper_length = flipper_length_mm)
+```
+
+## Úprava dat pomocí `tidyr`
+
+### Cvičení 9: Převod do dlouhého formátu
+
+**Úkol:** Převést dataset do dlouhého formátu se sloupci `measurement` a `value`, kde `measurement` obsahuje názvy proměnných a `value` jejich hodnoty.
+
+```{r}
+library(tidyr)
+
+penguins_long <- penguins %>%
+  pivot_longer(
+    cols = c(bill_length_mm, flipper_length_mm),
+    names_to = "measurement",
+    values_to = "value"
+  )
+```
+
+### Cvičení 10: Převod zpět do širokého formátu
+
+**Úkol:** Převést dataset zpět do původního širokého formátu.
+
+```{r}
+penguins_wide <- penguins_long %>%
+  pivot_wider(
+    names_from = measurement,
+    values_from = value
+  )
+```
+
+### Cvičení 11: Rozdělení sloupce
+
+**Úkol:** Rozděl sloupec `species` na dva nové sloupce: `genus` a `species_type`.
+
+```{r}
+penguins %>%
+  separate(species, into = c("genus", "species_type"), sep = " ")
+```
+
+### Cvičení 12: Odstranění hodnot `NA`
+
+**Úkol:** Odstraň řádky s chybějícími hodnotami.
+
+```{r}
+penguins %>% drop_na()
+```
+
+## Práce s kategoriálními daty pomocí `forcats`
+
+### Cvičení 13: Sloučení vzácných druhů do kategorie "Other"
+
+**Úkol:** Sloučit nejméně časté druhy do kategorie "Other" a zachovat pouze 3 nejčastější.
+
+```{r}
+library(forcats)
+
+penguins %>% mutate(species = fct_lump(species, n = 3))
+```
+
+### Cvičení 14: Přeuspořádání úrovní faktoru
+
+**Úkol:** Přeuspořádat faktor `species` podle průměrné hodnoty `bill_length_mm` sestupně.
+
+```{r}
+penguins %>% mutate(species = fct_reorder(species, bill_length_mm, .fun = mean, .desc = TRUE))
+```
+
+### Cvičení 15: Obrácení pořadí úrovní faktoru
+
+**Úkol:** Obrátit pořadí úrovní faktoru `species`.
+
+```{r}
+penguins %>% mutate(species = fct_rev(species))
+```
+
+## Práce s textem pomocí `stringr`
+
+### Cvičení 16: Detekce podřetězců
+
+**Úkol:** Najít všechny řádky, kde `species` obsahuje podřetězec `"Adel"`.
+
+```{r}
+penguins %>% filter(str_detect(species, "Adel"))
+```
+
+### Cvičení 17: Extrakce číselného ID ze stringu
+
+**Úkol:** Vytvoř vektor řetězců ve formátu `"Penguin_ID-XXXXX"`, kde `XXXXX` je číslo řádku, a extrahuj pouze číselnou část.
+
+```{r}
+penguin_ids <- paste0("Penguin_ID-", sprintf("%05d", seq_len(nrow(penguins))))
+numeric_ids <- str_extract(penguin_ids, "\\d+")
+```
+
+## Práce s datem a časem pomocí `lubridate`
+
+### Cvičení 18: Parsování a manipulace s datem
+
+**Úkol:** Převést řetězec `"2023-08-15"` na objekt typu datum a extrahovat rok, měsíc a den.
+
+```{r}
+library(lubridate)
+
+date <- ymd("2023-08-15")
+year_val <- year(date)
+month_val <- month(date)
+day_val <- day(date)
+```
+
+### Cvičení 19: Přičtení a odečtení časových intervalů
+
+**Úkol:** Přičíst 3 měsíce k datu `"2023-01-01"` a odečíst 10 dní.
+
+```{r}
+date <- ymd("2023-01-01")
+date_plus_3_months <- date %m+% months(3)
+date_minus_10_days <- date - days(10)
+```
+
+## Moderní práce s datovými rámci pomocí `tibble`
+
+### Cvičení 20: Vytvoření a úprava tibble
+
+**Úkol:** Vytvoř tibble se třemi sloupci: `Name` (text), `Age` (číselný), `Height` (číselný). Poté přidej nový sloupec `Weight`.
+
+```{r}
+library(tibble)
+
+people <- tibble(
+  Name = c("Alice", "Bob", "Charlie"),
+  Age = c(25, 30, 22),
+  Height = c(165, 180, 175)
+)
+
+people <- people %>%
+  mutate(Weight = c(55, 72, 68))
+```
+
+### Cvičení 21: Převod data frame na tibble
+
+**Úkol:** Převést vestavěný `data.frame` `mtcars` na tibble.
+
+```{r}
+as_tibble(mtcars)
+```
