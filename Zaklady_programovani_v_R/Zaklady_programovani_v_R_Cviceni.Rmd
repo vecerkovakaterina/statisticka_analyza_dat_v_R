@@ -1,0 +1,226 @@
+---
+title: 'Základy programování v R: Cvičení'
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Cvičení
+
+## Aritmetické operátory
+
+1. **Cvičení se sčítáním**
+   - Spočítejte součet čísel 12 a 8.
+
+```{r}
+# TODO váš kód zde
+```
+
+2. **Cvičení se zbytkem po dělení (modulo)**
+
+   * Zjistěte zbytek po dělení 29 číslem 6.
+
+```{r}
+# TODO váš kód zde
+```
+
+## Logické operátory
+
+1. **Cvičení s logickým A**
+
+   * Vyhodnoťte výsledek výrazu `TRUE & FALSE`.
+
+```{r}
+# TODO váš kód zde
+```
+
+2. **Cvičení s logickým NEBO**
+
+   * Určete výsledek výrazu `TRUE | FALSE`.
+
+```{r}
+# TODO váš kód zde
+```
+
+## Relační operátory
+
+1. **Kontrola rovnosti**
+
+   * Ověřte, zda `7` je rovno `5`.
+
+```{r}
+# TODO váš kód zde
+```
+
+2. **Kontrola větší než**
+
+   * Ověřte, zda `10` je větší než `3`.
+
+```{r}
+# TODO váš kód zde
+```
+
+## Přiřazovací operátory
+
+1. **Levostranné přiřazení**
+
+   * Přiřaďte hodnotu `15` proměnné `x` pomocí operátoru `<-`.
+
+```{r}
+# TODO váš kód zde
+```
+
+2. **Pravostranné přiřazení**
+
+   * Přiřaďte hodnotu `20` proměnné `y` pomocí operátoru `->`.
+
+```{r}
+# TODO váš kód zde
+```
+
+## Různé operátory
+
+1. **Vytvoření sekvence**
+
+   * Vytvořte sekvenci čísel od 1 do 10 pomocí operátoru `:`.
+
+```{r}
+# TODO váš kód zde
+```
+
+2. **Výběr ze seznamu**
+
+   * Získejte první sloupec datového rámce `df`, kde `df` je vytvořen pomocí `a = 1:3` a `b = 4:6`.
+
+```{r}
+   df <- data.frame(a = 1:3, b = 4:6)
+# TODO váš kód zde
+```
+
+## Proměnné
+
+1. **Přiřazení proměnné**
+
+   * Přiřaďte hodnotu `7` proměnné `result` a poté ji vypište.
+
+```{r}
+# TODO váš kód zde
+```
+
+2. **Přepsání proměnné**
+
+   * Přepište proměnnou `result` hodnotou `10` a vypište její novou hodnotu.
+
+```{r}
+# TODO váš kód zde
+```
+
+## Datové typy
+
+1. **Zjištění typu dat**
+
+   * Zkontrolujte typ proměnné `num`, které je přiřazena hodnota `3.14`.
+   * Nápověda: použijte `typeof()`.
+
+```{r}
+num <- 3.14
+# TODO váš kód zde
+```
+
+2. **Vytvoření faktoru**
+
+   * Vytvořte faktor `fact` s úrovněmi `male` a `female` a přiřaďte mu hodnotu `female`.
+
+```{r}
+# TODO váš kód zde
+```
+
+## Funkce
+
+1. **Vytvoření funkce**
+
+   * Definujte funkci `multiply`, která přijímá dva argumenty a vrací jejich součin.
+   * Nápověda: použijte `function()`.
+
+```{r}
+multiply <- function(a, b) {
+# TODO váš kód zde
+}
+```
+
+2. **Funkce s výchozím argumentem**
+
+   * Definujte funkci `subtract` s výchozí hodnotou argumentu `10`. Funkce má odečíst dané číslo od této výchozí hodnoty.
+
+```{r}
+subtract <- function(x = 10) {
+ # TODO váš kód zde
+}
+```
+
+## Řídicí struktury
+
+1. **Podmínka if-else**
+
+   * Napište `if` podmínku, která zkontroluje, zda `x` je menší než `10`, a vypíše "x je menší než 10", jinak "x je 10 nebo více".
+
+```{r}
+x <- 8
+# TODO váš kód zde
+```
+
+2. **Cyklus for**
+
+   * Napište `for` cyklus, který vypíše čísla od `1` do `3`.
+
+```{r}
+# TODO váš kód zde
+```
+
+## Práce s textem
+
+1. **Spojování textu**
+
+   * Spojte řetězce `"Data"` a `"Science"` s mezerou mezi nimi.
+
+```{r}
+str1 <- "Data"
+str2 <- "Science"
+# TODO váš kód zde
+```
+
+2. **Výběr podřetězce**
+
+   * Z řetězce `"Programming"` vyberte znaky od pozice `1` do `4`.
+
+```{r}
+text <- "Programming"
+# TODO váš kód zde
+```
+
+3. **Nahrazení textu**
+
+   * Nahraďte všechna výskyt slova `"the"` slovem `"a"` ve větě `"The quick brown fox jumps over the lazy dog"`.
+
+```{r}
+text <- "The quick brown fox jumps over the lazy dog"
+# TODO váš kód zde
+```
+
+4. **Změna velikosti písmen**
+
+   * Převeďte text `"hello world"` na velká písmena.
+
+```{r}
+text <- "hello world"
+# TODO váš kód zde
+```
+
+5. **Rozdělení textu**
+
+   * Rozdělte řetězec `"apple,banana,cherry"` podle čárek.
+
+```{r}
+text <- "apple,banana,cherry"
+# TODO váš kód zde
+```

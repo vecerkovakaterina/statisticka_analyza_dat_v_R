@@ -1,0 +1,346 @@
+---
+title: "Základy programování v R"
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Operátory
+
+Operátory jsou speciální symboly nebo klíčová slova používaná k provádění operací s proměnnými a hodnotami. R poskytuje různé typy operátorů pro různé typy výpočtů a manipulací.
+
+*Typy operátorů:*
+
+1. Aritmetické operátory  
+2. Logické operátory  
+3. Relační operátory  
+4. Přiřazovací operátory  
+5. Různé další operátory
+
+## Aritmetické operátory
+
+```{r}
+3 + 5  # Sčítání
+8 - 5  # Odčítání
+2 * 5  # Násobení
+6 / 2  # Dělení
+2 ^ 3  # Umocnění
+13 %% 4  # Zbytek po dělení
+2 ^ 1/2  # Pozor na prioritu operátorů
+2 ^ (1/2)  # Používejte závorky
+```
+
+## Logické operátory
+
+```{r}
+TRUE & FALSE  # Logické A
+TRUE | FALSE  # Logické NEBO
+!FALSE  # Logické NEGACE
+(TRUE & TRUE) | (FALSE & FALSE)
+xor(TRUE, TRUE)  # Exkluzivní NEBO
+```
+
+## Relační operátory
+
+```{r}
+FALSE == 0  # Rovnost
+TRUE == 1   # Rovnost
+6 != 8      # Nerovnost
+7 < 8       # Menší než
+7 > 8       # Větší než
+2 <= 7      # Menší nebo rovno
+2 >= 7      # Větší nebo rovno
+```
+
+## Přiřazovací operátory
+
+```{r}
+x <- 5  # Levostranné přiřazení
+5 -> x  # Pravostranné přiřazení
+x = 5   # Alternativní přiřazení
+```
+
+## Různé další operátory
+
+```{r}
+seq <- 1:5  # Sekvence
+seq
+```
+
+```{r}
+df <- data.frame(a = 1:3, b = 4:6)
+df$a  # Operátor pro výběr sloupce
+```
+
+```{r}
+vec <- c(1, 2, 3)
+vec[2]  # Indexace prvku
+```
+
+```{r}
+1 %in% vec  # Operátor příslušnosti
+```
+
+## Speciální operátory
+
+```{r, eval=FALSE}
+model <- lm(y ~ x, data = df)  # Operátor v lineárním modelu
+```
+
+# Proměnné
+
+Proměnné slouží k uložení a opětovnému použití hodnot. V R se hodnota přiřazuje pomocí `<-` nebo `=`.
+
+```{r}
+myVariable <- "hello" # Camel case konvence
+my_variable <- 3      # Snake case konvence
+my_variable <- 5      # Přepsání hodnoty
+also_my_variable <- 6 # Další proměnná
+result <- my_variable + also_my_variable # Výpočet
+print(result) # Výstup: 11
+```
+
+# Datové typy
+
+Datové typy určují druh dat uložených v proměnné.
+
+*Základní datové typy:*
+
+1. Numeric: číselné hodnoty
+2. Integer: celá čísla
+3. Character: text
+4. Logical: logické hodnoty (TRUE/FALSE)
+5. Complex: komplexní čísla
+6. Factor: kategoriální proměnné
+
+```{r}
+num <- 3.14
+int <- 5L
+char <- "hello"
+bool <- TRUE
+comp <- 1 + 2i
+fact <- factor("male", levels = c("male", "female"))
+```
+
+# Datové struktury
+
+R podporuje struktury pro více hodnot:
+
+1. Vektor
+2. Matice
+3. Seznam
+4. Datový rámec (data frame)
+5. Pole (array)
+
+## Funkce pro určení typu dat
+
+```{r}
+x <- 42L
+class_x <- class(x)
+typeof_x <- typeof(x)
+mode_x <- mode(x)
+
+print(class_x)
+print(typeof_x)
+print(mode_x)
+```
+
+```{r}
+y <- "R programming"
+print(class(y))
+print(typeof(y))
+print(mode(y))
+```
+
+# Funkce
+
+Funkce jsou bloky kódu vykonávající specifické úkoly.
+
+*Výhody:*
+
+* Opakované použití kódu
+* Modularita
+* Čitelnost
+* Snazší údržba
+
+*Definice funkce:*
+
+```{r, eval=FALSE}
+function_name <- function(arg1, arg2, ...) {
+  return(value)
+}
+```
+
+Příklad:
+
+```{r}
+add_numbers <- function(a, b) {
+  res <- a + b
+  return(res)
+}
+
+result <- add_numbers(3, 5)
+result
+```
+
+S výchozí hodnotou:
+
+```{r}
+greet <- function(name = "Svět") {
+  message <- paste("Ahoj,", name)
+  return(message)
+}
+
+greet()
+greet("studenti!")
+```
+
+Proměnné uvnitř funkcí jsou lokální:
+
+```{r, eval=FALSE}
+increment <- function(x, by = 1) {
+  y <- x + by
+  return(y)
+}
+```
+
+Vestavěné funkce:
+
+```{r}
+sqrt(16)
+log(10)
+mean(c(1, 2, 3, 4, 5))
+sd(c(1, 2, 3, 4, 5))
+```
+
+# Řídicí struktury
+
+## Podmínky (if / else)
+
+```{r}
+x <- 10
+
+if (x > 5) {
+  print("x je větší než 5")
+} else {
+  print("x není větší než 5")
+}
+```
+
+## Smyčky
+
+### For
+
+```{r}
+for (i in 1:5) {
+  print(i)
+}
+```
+
+### While
+
+```{r}
+count <- 1
+
+while (count <= 5) {
+  print(count)
+  count <- count + 1
+}
+```
+
+### Repeat
+
+```{r}
+count <- 1
+
+repeat {
+  print(count)
+  count <- count + 1
+  if (count > 5) {
+    break
+  }
+}
+```
+
+### Switch
+
+```{r}
+value <- "b"
+
+result <- switch(value,
+                 "a" = "První",
+                 "b" = "Druhý",
+                 "c" = "Třetí",
+                 "Neznámý")
+
+print(result)
+```
+
+# Práce s textem
+
+## Spojování
+
+```{r}
+str1 <- "Ahoj"
+str2 <- "světe"
+
+paste(str1, str2, sep = " ")
+paste0(str1, str2)
+```
+
+## Výběr podřetězce
+
+```{r}
+text <- "Hello World"
+
+substr(text, 1, 5)
+substring(text, 7)
+```
+
+## Délka řetězce
+
+```{r}
+nchar(text)
+```
+
+## Nahrazení
+
+```{r}
+text <- "The rain in Spain stays mainly in the plain"
+
+sub("ain", "xxx", text)
+gsub("ain", "xxx", text)
+```
+
+## Vyhledávání vzorů
+
+```{r}
+fruit <- c("apple", "banana", "cherry")
+
+grep("a", fruit)
+grepl("a", fruit)
+```
+
+```{r, eval=FALSE}
+?regex
+```
+
+## Rozdělení
+
+```{r}
+strsplit(text, " ")
+```
+
+## Změna velikosti písmen
+
+```{r}
+toupper(text)
+tolower(text)
+```
+
+## Odstranění mezer
+
+```{r}
+text <- "   Hello World   "
+trimws(text)
+```
