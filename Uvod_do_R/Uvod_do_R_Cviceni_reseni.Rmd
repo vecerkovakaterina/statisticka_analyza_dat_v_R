@@ -1,0 +1,150 @@
+---
+title: 'Úvod do R: Cvičení'
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "2025-06-19"
+output: html_document
+---
+
+# Cvičení
+
+## Cvičení 1: Instalace a načtení balíčků
+
+### Úkol:
+1. **Nainstalujte balíčky `ggplot2` a `dplyr`**
+2. **Načtěte tyto balíčky**
+
+```{r}
+# install packages
+install.packages("ggplot2")
+install.packages("dplyr")
+
+# load the installed packages so we can use the implemented functions
+library(ggplot2)
+library(dplyr)
+```
+
+## Cvičení 2: Orientace v RStudio
+
+### Úkol:
+
+1. **Spusťte následující příkaz v RStudio** pro zobrazení dokumentace k funkci `nrow`:
+
+```{r}
+?nrow
+```
+
+2. **Vytvořte nový R skript** v RStudio a spusťte celý skript pomocí možnosti Run All.
+
+## Cvičení 3: Práce s R projekty a `renv`
+
+### Úkol:
+
+1. **Inicializujte nový projekt s prostředím `renv`**
+
+   **Tip:** Použijte `renv::init()` pro inicializaci nového prostředí nebo zaškrtněte příslušné pole v dialogovém okně při vytváření nového R projektu.
+
+2. **Nainstalujte balíčky `ggplot2` a `dplyr`** v tomto prostředí `renv`.
+
+3. **Vytvořte snímek aktuálního prostředí**, čímž se vytvoří soubor `renv.lock`:
+
+```{r}
+install.packages("ggplot2")
+install.packages("dplyr")
+
+renv::snapshot()
+```
+
+4. **Obnovte prostředí** ze souboru `renv.lock`, abyste zajistili konzistenci.
+
+```{r}
+renv::restore()
+```
+
+## Cvičení 4: Vytvoření dokumentu R Markdown
+
+### Úkol:
+
+1. **Napište jednoduchý R Markdown dokument**, který bude obsahovat:
+
+   * Název a autora v YAML záhlaví.
+   * Sekci s nadpisem a odstavcem popisujícím, co je R.
+   * R kódový blok, který vypočítá a zobrazí průměr číselného vektoru.
+
+   **Tip:** Použijte `rmarkdown::render()` pro vygenerování dokumentu z vašeho R Markdown souboru.
+
+   ```markdown
+   ---
+   title: "Jednoduchá zpráva"
+   author: "Vaše jméno"
+   output: html_document
+   ---
+
+   ## Úvod do R
+
+   R je programovací jazyk používaný pro statistickou analýzu.
+
+   ```{r}
+   # Číselný vektor
+   numbers <- c(1, 2, 3, 4, 5)
+
+   # Výpočet průměru
+   mean_value <- mean(numbers)
+   mean_value
+   ```
+   ```
+   
+## (Volitelné) Cvičení 5: Vytvoření Shiny aplikace
+
+### Úkol:
+
+1. **Vytvořte základní Shiny aplikaci** s posuvníkem pro výběr rozsahu a výstupem grafu, který zobrazuje čárový graf na základě vybraného rozsahu.
+
+   **Tip:** Definujte `ui` pro uživatelské rozhraní a `server` pro logiku na straně serveru. Použijte `shinyApp()` pro spuštění aplikace.
+
+```{r, eval=FALSE}
+# ZAPIŠTE TENTO KÓD DO SAMOSTATNÉHO SOUBORU
+# Načtení balíčku Shiny
+library(shiny)
+
+# Definice uživatelského rozhraní
+ui <- fluidPage(
+  
+  # Titulek aplikace
+  titlePanel("Shiny aplikace s posuvníkem a grafem"),
+  
+  # Rozvržení se vstupy a výstupy
+  sidebarLayout(
+    sidebarPanel(
+      # Posuvník: Výběr rozsahu hodnot
+      sliderInput("range", 
+                  "Vyberte rozsah:", 
+                  min = 1, 
+                  max = 100, 
+                  value = c(10, 50))
+    ),
+    
+    # Zobrazení grafu
+    mainPanel(
+      plotOutput("linePlot")
+    )
+  )
+)
+
+# Definice serverové logiky
+server <- function(input, output) {
+  
+  output$linePlot <- renderPlot({
+    # Generování hodnot x podle zvoleného rozsahu
+    x <- seq(input$range[1], input$range[2], by = 1)
+    y <- sin(x)  # Příklad: Použití funkce sinus
+    
+    # Vykreslení grafu
+    plot(x, y, type = "l", col = "blue", lwd = 2,
+         xlab = "Hodnoty X", ylab = "Hodnoty Y (sin(x))",
+         main = "Čárový graf funkce sin(x)")
+  })
+}
+
+# Spuštění aplikace
+shinyApp(ui = ui, server = server)
+```

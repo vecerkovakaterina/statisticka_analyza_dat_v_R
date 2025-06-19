@@ -1,0 +1,238 @@
+---
+title: "Úvod do R"
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Úvod
+
+## R
+
+R je programovací jazyk používaný pro statistickou analýzu a vizualizaci dat. Je open-source a zdarma, dostupný pod licencí GNU General Public License. R je interpretovaný jazyk, což znamená, že příkazy se vykonávají jeden po druhém v konzoli. Komunita kolem R je velmi aktivní a vyvíjí a udržuje širokou škálu balíčků. Kdykoli chcete použít funkci z balíčku, nejprve jej nainstalujte takto:
+
+```{r, eval=FALSE}
+install.packages("tidyverse")
+```
+
+Abyste mohli funkce z balíčku `tidyverse` používat a přistupovat k jeho dokumentaci, balíček importujte:
+
+```{r, eval=FALSE}
+library(tidyverse)
+```
+
+Pro instalaci R postupujte podle pokynů na [webu CRAN](https://cran.r-project.org). Distribuce R obsahuje interpret, základní balíčky a potřebné knihovny pro běh kódu. Po instalaci R na váš systém můžete pomocí CRAN vyhledávat a instalovat další balíčky pro rozšíření prostředí.
+
+Konzoli R otevřete kliknutím na ikonu R nebo pomocí terminálu zadáním:
+
+```{bash, eval=FALSE}
+R
+```
+
+na Linuxu a macOS, a
+
+```
+R.exe
+```
+
+na Windows.
+
+## Vývojová prostředí
+
+### RStudio
+
+Efektivnější a přehlednější způsob práce s R je použití IDE (integrované vývojové prostředí). Nejoblíbenější volbou je RStudio. RStudio se instaluje samostatně a je dostupné [zde](https://posit.co/download/rstudio-desktop/). Má pohodlné uživatelské rozhraní pro úpravu skriptů, procházení souborů, přístup k dokumentaci a zobrazení grafů, tabulek a proměnných.
+
+#### Navigace v RStudio
+
+RStudio je rozděleno do čtyř hlavních panelů: Editor, Konzole, Prostředí a Soubory/Grafy/Nápověda. Editor slouží pro psaní a úpravu skriptů. Konzole, umístěná pod Editorem, zobrazuje výstup skriptů. Vedle Konzole je záložka Terminál pro klasický bash terminál. Panel Prostředí (vpravo nahoře) zobrazuje všechny proměnné a nabízí přepínač projektů. Pravý dolní panel slouží pro práci se soubory, grafy a dokumentací. Dokumentaci k libovolné funkci zobrazíte příkazem:
+
+```{r, eval=FALSE}
+?nrow
+```
+
+#### Jak spustit příkaz v RStudio
+
+V editoru označte příkaz(y) a spusťte je pomocí Ctrl + Enter.
+
+#### Jak spustit celý skript v RStudio
+
+V pravém horním rohu editoru klikněte na Run a vyberte Run All.
+
+#### Jak spustit celý skript v terminálu
+
+Přejděte do adresáře s požadovaným skriptem:
+
+```{bash, eval=FALSE}
+cd project_directory
+```
+
+a spusťte skript:
+
+```{bash, eval=FALSE}
+Rscript hello_world.R
+```
+
+### Jupyter Notebook a Google Colab
+
+Alternativou populární mezi uživateli Pythonu jsou Jupyter Notebooks nebo Google Colab. Tyto platformy poskytují interaktivní prostředí pro psaní a spouštění kódu s kombinací bohatého textu (nadpisy, obrázky, rovnice).
+
+Pro použití R v Jupyter Notebooku je třeba nainstalovat IRKernel. V Google Colab můžete specifikovat jazyk R na začátku nebo používat R buňky v rámci Python notebooku.
+
+# Vývoj projektů
+
+## Rproj
+
+R projekt je sada souborů a adresářů spojená pro konkrétní projekt nebo analýzu. Při vytvoření projektu v RStudio se vytvoří nový adresář se souborem `.Rproj`. Tento soubor uchovává informace o pracovním adresáři, proměnných prostředí a dalších nastaveních, včetně použité verze R.
+
+## renv
+
+V softwarovém vývoji prostředí označuje specifickou sadu závislostí a verzí potřebných pro běh projektu. Prostředí zabraňuje konfliktům mezi projekty a zajišťuje konzistenci mezi vývojem, testováním a produkcí.
+
+Balíček `renv` spravuje závislosti v R projektech. Vytváří snímky použitých balíčků a jejich verzí, což usnadňuje replikaci prostředí. To zajišťuje konzistenci mezi zařízeními a členy týmu.
+
+Při vytvoření nového projektu RStudio nabídne použití `renv`. Lze to provést také ručně:
+
+```{r, eval=FALSE}
+renv::init()
+```
+
+Při instalaci balíčků se tyto uloží do prostředí `renv`:
+
+```{r, eval=FALSE}
+install.packages(c("ggplot2", "dplyr"))
+```
+
+Pro uložení aktuálních balíčků a verzí použijte:
+
+```{r, eval=FALSE}
+renv::snapshot()
+```
+
+Tím se vytvoří soubor `renv.lock` v projektovém adresáři, což je užitečné při sdílení projektů (např. na GitHubu).
+
+Obnovení prostředí ze souboru `renv.lock` se provede takto:
+
+```{r, eval=FALSE}
+renv::restore()
+```
+
+# Užitečná slovní zásoba R
+
+## R Markdown
+
+V bioinformatice je běžné dokumentovat výsledky pro kolegy nebo laboratorní záznamy. Klíčová je reprodukovatelnost práce – možnost opakovaného spuštění a ověření. Oblíbený přístup je "literate programming", kdy se kombinuje čitelný text s kódem a výstupy v jednom dokumentu. V R se k tomu používá R Markdown, který umožňuje kombinaci textu a kódu a výstup ve formátu PDF, HTML či Word. Balíčky `knitr` a `Quarto` tuto funkcionalitu rozšiřují.
+
+Užitečný zdroj: [RMarkdown cheat sheet](https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf).
+
+R Markdown kombinuje Markdown a R kódové bloky.
+
+*Tohle je Markdown blok!*
+
+```{r, eval=TRUE, echo=TRUE}
+# Tohle je R kódový blok!
+x <- 10
+y <- 5
+result <- x + y
+result
+```
+
+```{bash, eval=TRUE, echo=TRUE}
+# Tohle je bash kódový blok!
+echo "Hello world!"
+```
+
+Pro vygenerování HTML nebo PDF použijte tlačítko Knit nebo příkaz:
+
+```{r, eval=FALSE}
+rmarkdown::render(input="simple_report.Rmd", output_dir="reports", output_file="simple_report.html")
+```
+
+Výstupní formát specifikujete v YAML záhlaví dokumentu:
+
+```
+---
+title: "Jednoduchá zpráva"
+output:
+  html_document:
+    toc: true # obsah
+    number_sections: true
+---
+```
+
+## shiny
+
+[Shiny](https://shiny.posit.co) je R balíček pro vytváření interaktivních webových aplikací a dashboardů. Umožňuje definici uživatelského rozhraní (UI) a serverové logiky v R, která reaguje na vstupy uživatele.
+
+Typická Shiny aplikace se skládá ze dvou částí: UI, kde se definují ovládací prvky a výstupy, a serveru, kde se provádí výpočty a aktualizace výstupů.
+
+Shiny lze integrovat do R Markdown a Quarto dokumentů pro interaktivní analýzy.
+
+```{r, eval=FALSE}
+library(shiny)
+sliderInput("range", "Zvolte x:", min = 1, max = 10, value = 5)
+```
+
+```{r , eval=FALSE}
+renderPlot({
+    x <- seq(1, input$range)
+    plot(x, x^2, type = "l", col = "blue")
+  })
+```
+
+## CRAN
+
+[CRAN](https://cran.r-project.org) (Comprehensive R Archive Network) je hlavní repozitář pro balíčky R. Nabízí tisíce balíčků pro různé účely, přispívaných komunitou. Pro instalaci použijte:
+
+```{r, eval=FALSE}
+install.packages("ggplot2")
+```
+
+Balíček načtete do sezení pomocí:
+
+```{r, eval=FALSE}
+library(ggplot2)
+```
+
+## Bioconductor
+
+[Bioconductor](https://www.bioconductor.org) je open-source projekt v R zaměřený na analýzu genomických dat. Obsahuje nástroje pro mikroarraye, NGS a další technologie. Nabízí balíčky pro předzpracování, statistickou analýzu, vizualizaci a práci s biologickými databázemi.
+
+Pro nastavení `renv` s Bioconductor použijte:
+
+```{r, eval=FALSE}
+renv::init(bioconductor = TRUE)
+```
+
+Instalace balíčků z Bioconductor probíhá přes `BiocManager`:
+
+```{r, eval=FALSE}
+# Instalace BiocManager, pokud není dostupný
+if (!requireNamespace("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+
+# Instalace balíčku z Bioconductor
+BiocManager::install("DEseq2")
+```
+
+## Porovnání s Pythonem
+
+| Nástroj v R  | Ekvivalent v Pythonu |
+| ------------ | -------------------- |
+| R projekt    | Anaconda/Conda       |
+| renv         | virtualenv/venv      |
+| R Markdown   | Jupyter Notebook     |
+| CRAN         | PyPI                 |
+| Shiny        | Dash/Streamlit       |
+| ggplot2      | Matplotlib/Seaborn   |
+| dplyr        | pandas               |
+| tidyr        | pandas (reshape)     |
+| caret        | scikit-learn         |
+| RStudio      | PyCharm/VSCode       |
+| Bioconductor | Biopython            |
+| Plumber      | FastAPI/Flask        |
+| knitr        | nbconvert            |
+| rvest        | Beautiful Soup       |
+| data.table   | pandas (s Dask)      |
+| leaflet      | Folium               |

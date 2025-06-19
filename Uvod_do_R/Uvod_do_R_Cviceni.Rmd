@@ -1,0 +1,97 @@
+---
+title: 'Úvod do R: Cvičení'
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "2025-06-19"
+output: html_document
+---
+
+# Cvičení
+
+## Cvičení 1: Instalace a načtení balíčků
+
+### Úkol:
+1. **Nainstalujte balíčky `ggplot2` a `dplyr`**
+2. **Načtěte tyto balíčky**
+
+```{r}
+# TODO váš kód sem
+```
+
+## Cvičení 2: Orientace v RStudio
+
+### Úkol:
+
+1. **Spusťte následující příkaz v RStudio** pro zobrazení dokumentace k funkci `nrow`:
+
+```{r}
+# TODO váš kód sem
+```
+
+2. **Vytvořte nový R skript** v RStudio a spusťte celý skript pomocí možnosti Run All.
+
+## Cvičení 3: Práce s R projekty a `renv`
+
+### Úkol:
+
+1. **Inicializujte nový projekt s prostředím `renv`**
+
+   **Tip:** Použijte `renv::init()` pro inicializaci nového prostředí nebo zaškrtněte příslušné pole v dialogovém okně při vytváření nového R projektu.
+
+2. **Nainstalujte balíčky `ggplot2` a `dplyr`** v tomto prostředí `renv`.
+
+3. **Vytvořte snímek aktuálního prostředí**, čímž se vytvoří soubor `renv.lock`:
+
+```{r}
+# TODO váš kód sem
+```
+
+4. **Obnovte prostředí** ze souboru `renv.lock`, abyste zajistili konzistenci.
+
+```{r}
+# TODO váš kód sem
+```
+
+## Cvičení 4: Vytvoření dokumentu R Markdown
+
+### Úkol:
+
+1. **Napište jednoduchý R Markdown dokument**, který bude obsahovat:
+
+   * Název a autora v YAML záhlaví.
+   * Sekci s nadpisem a odstavcem popisujícím, co je R.
+   * R kódový blok, který vypočítá a zobrazí průměr číselného vektoru.
+
+   **Tip:** Použijte `rmarkdown::render()` pro vygenerování dokumentu z vašeho R Markdown souboru.
+
+   ```markdown
+   ---
+   title: "Jednoduchá zpráva"
+   author: "Vaše jméno"
+   output: html_document
+   ---
+
+   ## Úvod do R
+
+   R je programovací jazyk používaný pro statistickou analýzu.
+
+   ```{r}
+   # Číselný vektor
+   numbers <- c(1, 2, 3, 4, 5)
+
+   # Výpočet průměru
+   mean_value <- mean(numbers)
+   mean_value
+   ```
+   ```
+   
+## (Volitelné) Cvičení 5: Vytvoření Shiny aplikace
+
+### Úkol:
+
+1. **Vytvořte základní Shiny aplikaci** s posuvníkem pro výběr rozsahu a výstupem grafu, který zobrazuje čárový graf na základě vybraného rozsahu.
+
+   **Tip:** Definujte `ui` pro uživatelské rozhraní a `server` pro logiku na straně serveru. Použijte `shinyApp()` pro spuštění aplikace.
+
+```{r}
+# TODO váš kód sem
+```
