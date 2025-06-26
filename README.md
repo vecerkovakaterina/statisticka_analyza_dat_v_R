@@ -6,7 +6,7 @@ Toto je rozpracovaný projekt
 | Úvod do R                          | ✅        | ✅       | ✅      | ❌                 |
 | Základy programování v R           | ✅        | ✅       | ✅      | ❌                 |
 | Manipulace s daty pomocí tidyverse | ✅        | ✅       | ✅      | ❌                 |
-| Průzkumná analýza dat              | ❌        | ❌       | ❌      | ❌                 |
+| Průzkumná analýza dat              | ✅        | ✅       | ✅      | ❌                 |
 | Odhad parametrů                    | ❌        | ❌       | ❌      | ❌                 |
 | Náhodná veličina                   | ❌        | ❌       | ❌      | ❌                 |
 | Centrální limitní věta             | ❌        | ❌       | ❌      | ❌                 |
