@@ -1,0 +1,123 @@
+---
+title: "Náhodná veličina"
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Náhodná veličina, PMF, PDF a CDF
+
+## Úvod
+
+V tomto tutoriálu se seznámíme s pojmem náhodné veličiny ve statistice, pochopíme její typy a naučíme se s nimi pracovat v R. Na konci této lekce byste měli být schopni definovat náhodné veličiny, rozlišovat mezi diskrétními a spojitými veličinami a modelovat pravděpodobnostní rozdělení pomocí jazyka R.
+
+## Co je náhodná veličina?
+
+Náhodná veličina je číselný výsledek náhodného procesu. Například při hodu mincí můžeme přiřadit výstupům (panna nebo orel) číselné hodnoty.
+
+* **Diskrétní náhodná veličina:** veličina, která může nabývat konečného nebo spočetného počtu hodnot (např. počet panen při pěti hodech mincí).
+* **Spojitá náhodná veličina:** veličina, která může nabývat nekonečně mnoha hodnot v daném intervalu (např. výška studentů ve třídě).
+
+## Diskrétní náhodné veličiny
+
+Diskrétní náhodné veličiny mohou nabývat konečného množství hodnot. Např. hod kostkou může vést k hodnotám od 1 do 6.
+
+```{r}
+# simulace hodu kostkou
+set.seed(42) # pevné semínko pro opakovatelnost
+rolls <- sample(1:6, size = 1000, replace = TRUE)
+table(rolls)
+```
+
+### **Pravděpodobnostní funkce (PMF)**
+
+* **Definice:** Pravděpodobnostní funkce (PMF) popisuje pravděpodobnostní rozdělení diskrétní náhodné veličiny a přiřazuje pravděpodobnosti jednotlivým hodnotám. Vyjadřuje pravděpodobnost, že veličina nabude konkrétní hodnoty.
+* **Vlastnosti:** PMF je nezáporná a součet všech pravděpodobností je roven 1.
+
+```{r}
+library(ggplot2)
+
+# vykreslení PMF hodů kostkou
+rolls_data <- as.data.frame(table(rolls))
+colnames(rolls_data) <- c("roll", "frequency")
+rolls_data$roll <- as.factor(rolls_data$roll)
+rolls_data$probability <- rolls_data$frequency / sum(rolls_data$frequency)
+
+ggplot(rolls_data, aes(x = roll, y = probability)) +
+  geom_bar(stat = "identity", fill = "skyblue", color = "black") +
+  labs(title = "Pravděpodobnostní funkce hodů kostkou",
+       x = "Výsledek hodu",
+       y = "Pravděpodobnost") +
+  theme_minimal()
+```
+
+### **Distribuční funkce (CDF) pro diskrétní veličiny**
+
+* **Definice:** Distribuční funkce (CDF) udává pravděpodobnost, že náhodná veličina nabude hodnoty menší nebo rovné než dané x.
+* **Vztah k PMF:** CDF je součtem pravděpodobností z PMF.
+* **Vlastnosti:** CDF je nezáporná, neklesající, pravostranně spojitá, začíná na 0 a konverguje k 1.
+
+```{r}
+# výpočet kumulativní pravděpodobnosti
+rolls_data$cumulative_probability <- cumsum(rolls_data$probability)
+
+# vykreslení CDF pomocí schodového grafu
+ggplot(rolls_data, aes(x = as.numeric(as.character(roll)), y = cumulative_probability)) +
+  geom_step(color = 'blue', size = 1) +
+  labs(title = "Distribuční funkce (CDF) hodů kostkou",
+       x = "Výsledek hodu",
+       y = "Kumulativní pravděpodobnost") +
+  scale_x_continuous(breaks = 1:6) +
+  theme_minimal()
+```
+
+**Pozor! Graf výše není zcela přesný – dokážete říct proč?**
+
+## Spojité náhodné veličiny
+
+Spojité náhodné veličiny mohou nabývat jakékoli hodnoty v určitém intervalu. Například výška studentů.
+
+```{r}
+# simulace výšek studentů
+heights <- rnorm(1000, mean=170, sd=10)
+heights[1:10] # prvních deset hodnot
+```
+
+### **Hustota pravděpodobnosti (PDF)**
+
+* **Definice:** Hustota pravděpodobnosti (PDF) popisuje pravděpodobnostní rozdělení spojité náhodné veličiny. Neudává pravděpodobnost přímo, ale oblast pod křivkou v určitém intervalu představuje pravděpodobnost, že hodnota padne do tohoto intervalu. Pravděpodobnost přesně jedné hodnoty je nulová.
+* **Vlastnosti:** PDF je nezáporná a plocha pod křivkou je rovna 1.
+
+```{r}
+# vykreslení hustoty pravděpodobnosti výšek
+ggplot(data.frame(heights = heights), aes(x = heights)) +
+  geom_density(color = 'blue', fill = 'lightblue', alpha = 0.5) +
+  labs(title = "PDF výšek (průměr = 170, sd = 10)",
+       x = "Výška (cm)", y = "Hustota") +
+  theme_minimal()
+```
+
+### **Distribuční funkce (CDF) pro spojité veličiny**
+
+* **Definice:** Distribuční funkce (CDF) u spojitých veličin udává pravděpodobnost, že náhodná veličina nabude hodnoty menší nebo rovné než x.
+* **Vztah k PDF:** CDF se získává integrací PDF.
+* **Vlastnosti:** Neklesající, pravostranně spojitá, od 0 do 1.
+
+```{r}
+library(magrittr)
+library(tidyverse)
+
+# výpočet CDF
+heights_data <- data.frame(heights = heights)
+heights_data <- heights_data %>% arrange(heights)
+heights_data$cdf <- (1:nrow(heights_data)) / nrow(heights_data)
+
+# vykreslení CDF
+ggplot(heights_data, aes(x = heights, y = cdf)) +
+  geom_step(color = 'blue', size = 1) +
+  labs(title = "Distribuční funkce (CDF) výšek",
+       x = "Výška",
+       y = "Kumulativní pravděpodobnost") +
+  theme_minimal()
+```
+

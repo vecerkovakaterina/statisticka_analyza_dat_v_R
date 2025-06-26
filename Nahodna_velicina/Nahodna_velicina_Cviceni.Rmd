@@ -1,0 +1,121 @@
+---
+title: 'Náhodná veličina: Cvičení'
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Cvičení
+
+## **Cvičení 1: Simulace nefér mince**
+
+Simulujte 1000 hodů nefér mincí, kde pravděpodobnost padnutí orla je 0,7. Vypočítejte a vykreslete pravděpodobnostní funkci (PMF) pro počet orlů.
+
+```{r}
+set.seed(42)
+library(ggplot2)
+# vykreslení PMF
+```
+
+## **Cvičení 2: Distribuční funkce (CDF) pro nefér minci**
+
+Použijte výsledek z Cvičení 1, vypočítejte a vykreslete distribuční funkci (CDF) pro počet orlů z 1000 hodů nefér mincí.
+
+```{r}
+# vykreslení CDF pomocí schodového grafu
+```
+
+## **Cvičení 3: Vlastní diskrétní náhodná veličina – Počet gólů ve fotbalovém zápase**
+
+Předpokládejme, že fotbalový tým dává 0 až 4 góly za zápas s následujícími pravděpodobnostmi:
+
+* 0 gólů: 0.2
+* 1 gól: 0.3
+* 2 góly: 0.25
+* 3 góly: 0.15
+* 4 góly: 0.1
+
+Napište kód pro reprezentaci této diskrétní náhodné veličiny. Poté vypočítejte a vykreslete její PMF a CDF.
+
+```{r}
+# vykreslení PMF
+# vykreslení CDF
+```
+
+## **Cvičení 4: Simulace výsledků testu se spojitým rozdělením**
+
+Simulujte výsledky testu pro 500 studentů. Výsledky jsou normálně rozděleny s průměrem 75 a směrodatnou odchylkou 10.
+
+1. Vypočítejte pravděpodobnost, že student získá více než 90 bodů.
+2. Vykreslete hustotu pravděpodobnosti (PDF) výsledků.
+
+```{r}
+test_scores <- rnorm(500, mean = 75, sd = 10)
+# výpočet pravděpodobnosti nad 90 bodů
+# vykreslení PDF výsledků testu
+```
+
+## **Cvičení 5: Odhad CDF z empirických dat**
+
+Použijte výsledky testu ze Cvičení 4, vypočítejte a vykreslete empirickou distribuční funkci (CDF). Odhadněte pravděpodobnost, že student získá méně než 60 bodů.
+
+```{r}
+# TODO: váš kód zde
+```
+
+## **Cvičení 6: Vztah mezi PMF a očekávanou hodnotou**
+
+Firma prodává produkt za 5 USD. Pravděpodobnost prodeje u jednoho zákazníka je 0,1 a kontaktuje 100 zákazníků.
+
+1. Simulujte počet prodejů ze 100 kontaktů.
+2. Vypočítejte očekávaný zisk z těchto prodejů.
+3. Vykreslete PMF počtu prodejů.
+
+```{r}
+# parametry
+n_customers <- 100    # počet oslovených zákazníků
+p_sale <- 0.1         # pravděpodobnost prodeje
+
+# rozsah možných prodejů (0 až 100)
+# výpočet PMF pro každý možný počet prodejů
+# ověřte, že součet pravděpodobností je 1
+# výpočet očekávaného zisku (zisk = 5 * počet prodejů)
+# vykreslení PMF počtu prodejů
+# určení nejpravděpodobnějšího počtu prodejů
+```
+
+## **Cvičení 7: Porovnání dvou spojitých náhodných veličin**
+
+Simulujte dvě spojité náhodné veličiny:
+
+1. X \~ N(0, 1)
+
+2. Y \~ N(3, 1.5)
+
+3. Vykreslete hustoty pravděpodobnosti (PDF) obou veličin na jednom grafu.
+
+4. Vypočítejte pravděpodobnost, že X > Y.
+
+```{r}
+library(dplyr)
+library(tidyr)
+
+# X ~ N(0, 1) a Y ~ N(3, 1.5)
+# vykreslení PDF X a Y do jednoho grafu
+# výpočet pravděpodobnosti, že X > Y
+# nutné získat rozdělení rozdílu Z = X - Y a pak spočítat P(Z > 0)
+# výpočet P(Z > 0)
+```
+
+## **Cvičení 8: Rovnoměrné rozdělení – náhodná procházka**
+
+Vygenerujte 1000 kroků náhodné procházky, kde každý krok je náhodně zvolen z rovnoměrného rozdělení mezi -1 a 1.
+
+1. Vykreslete trajektorii náhodné procházky.
+2. Vypočítejte a vykreslete kumulativní součet kroků.
+
+```{r}
+n_steps <- 1000
+steps <- runif(n_steps, min = -1, max = 1)
+# výpočet kumulativního součtu pro trajektorii procházky
+```

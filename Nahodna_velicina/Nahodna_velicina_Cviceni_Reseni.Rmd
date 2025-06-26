@@ -1,0 +1,295 @@
+---
+title: 'Náhodná veličina: Cvičení'
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Cvičení
+
+## **Cvičení 1: Simulace nefér mince**
+
+Simulujte 1000 hodů nefér mincí, kde pravděpodobnost padnutí orla je 0,7. Vypočítejte a vykreslete pravděpodobnostní funkci (PMF) pro počet orlů.
+
+```{r}
+set.seed(42)
+library(ggplot2)
+
+# simulate coin tosses
+coin_tosses <- sample(c("heads", "tails"), size = 1000, replace = TRUE, prob = c(0.7, 0.3))
+
+# plot PMF
+coin_tosses_table <- table(coin_tosses)
+coin_tosses_data <- as.data.frame(coin_tosses_table)
+colnames(coin_tosses_data) <- c("coin_toss", "frequency")
+coin_tosses_data$coin_toss <- as.factor(coin_tosses_data$coin_toss)
+coin_tosses_data$probability <- coin_tosses_data$frequency / sum(coin_tosses_data$frequency)
+
+ggplot(coin_tosses_data, aes(x = coin_toss, y = probability)) +
+  geom_bar(stat = "identity", fill = "darkorange", color = "black") +
+  labs(title = "Probability Mass Function of Coin Tosses",
+       x = "Coin Toss Outcome",
+       y = "Probability") +
+  theme_minimal()
+```
+
+## **Cvičení 2: Distribuční funkce (CDF) pro nefér minci**
+
+Použijte výsledek z Cvičení 1, vypočítejte a vykreslete distribuční funkci (CDF) pro počet orlů z 1000 hodů nefér mincí.
+
+```{r}
+set.seed(42)
+# compute cumulative probabilities
+cdf <- cumsum(coin_tosses_table) / sum(coin_tosses_table)
+
+# Add a zero-probability point
+cdf <- c(0, cdf)
+outcomes <- c("Start", names(coin_tosses_table))  # add a label for the zero point
+
+# create a data frame for plotting
+cdf_df <- data.frame(
+  outcome = names(cdf),
+  cumulative_probability = as.numeric(cdf)
+)
+
+# convert outcome to factor and use numeric positions for x
+cdf_df$numeric_outcome <- seq_along(cdf_df$outcome)
+
+# plot using ggplot2
+ggplot(cdf_df, aes(x = numeric_outcome, y = cumulative_probability)) +
+  # horizontal lines for steps
+  geom_segment(
+    aes(x = numeric_outcome - 0.5, xend = numeric_outcome + 0.5,
+        y = cumulative_probability, yend = cumulative_probability),
+    color = "black"
+  ) +
+  # filled points at the left end
+  geom_point(
+    aes(x = numeric_outcome - 0.5, y = cumulative_probability),
+    size = 3, color = "black", shape = 16  # filled circle
+  ) +
+  # hollow points at the right end
+  geom_point(
+    aes(x = numeric_outcome + 0.5, y = cumulative_probability),
+    size = 3, color = "black", shape = 1  # hollow circle
+  ) +
+  # customize x-axis labels
+  scale_x_continuous(breaks = cdf_df$numeric_outcome, labels = cdf_df$outcome) +
+  labs(
+    title = "Discontinuous CDF of Coin Toss Outcomes",
+    x = "Outcome",
+    y = "Cumulative Probability"
+  ) +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, 1))  # ensure y-axis spans from 0 to 1
+```
+
+## **Cvičení 3: Vlastní diskrétní náhodná veličina – Počet gólů ve fotbalovém zápase**
+
+Předpokládejme, že fotbalový tým dává 0 až 4 góly za zápas s následujícími pravděpodobnostmi:
+
+* 0 gólů: 0.2
+* 1 gól: 0.3
+* 2 góly: 0.25
+* 3 góly: 0.15
+* 4 góly: 0.1
+
+Napište kód pro reprezentaci této diskrétní náhodné veličiny. Poté vypočítejte a vykreslete její PMF a CDF.
+
+```{r}
+set.seed(42)
+scores <- data.frame(number_of_goals = c(0:4), probability = c(0.2, 0.3, 0.25, 0.15, 0.1))
+# plot PMF
+ggplot(scores, aes(x = number_of_goals, y = probability)) +
+  geom_bar(stat = "identity", fill = "yellowgreen", color = "black") +
+  labs(title = "Probability Mass Function of Soccer Match Scores",
+       x = "Number of Goals in a Match",
+       y = "Probability") +
+  theme_minimal()
+
+# compute the cumulative probabilities (CDF)
+scores$cumulative_probability <- cumsum(scores$probability)
+
+# plot the CDF using ggplot2
+ggplot(scores, aes(x = number_of_goals, y = cumulative_probability)) +
+  # horizontal lines for steps
+  geom_segment(
+    aes(x = number_of_goals - 0.5, xend = number_of_goals + 0.5,
+        y = cumulative_probability, yend = cumulative_probability),
+    color = "black"
+  ) +
+  # filled points at the left end
+  geom_point(
+    aes(x = number_of_goals - 0.5, y = cumulative_probability),
+    size = 3, color = "black", shape = 16  # filled circle
+  ) +
+  # hollow points at the right end
+  geom_point(
+    aes(x = number_of_goals + 0.5, y = cumulative_probability),
+    size = 3, color = "black", shape = 1  # hollow circle
+  ) +
+  labs(
+    title = "Discontinuous CDF of Goals in a Soccer Match",
+    x = "Outcome",
+    y = "Cumulative Probability"
+  ) +
+  theme_minimal() +
+  scale_y_continuous(limits = c(0, 1))  # ensure y-axis spans from 0 to 1
+```
+
+## **Cvičení 4: Simulace výsledků testu se spojitým rozdělením**
+
+Simulujte výsledky testu pro 500 studentů. Výsledky jsou normálně rozděleny s průměrem 75 a směrodatnou odchylkou 10.
+
+1. Vypočítejte pravděpodobnost, že student získá více než 90 bodů.
+2. Vykreslete hustotu pravděpodobnosti (PDF) výsledků.
+
+```{r}
+set.seed(42)
+mean_score <- 75
+sd_score <- 10
+test_scores <- rnorm(500, mean = mean_score, sd = sd_score)
+
+# calculate the probability of scoring above 90
+prob_above_90 <- 1 - pnorm(90, mean = mean_score, sd = sd_score)
+prob_above_90
+
+# plot the PDF of the test scores
+ggplot(data.frame(scores = test_scores), aes(x = scores)) +
+  geom_density(fill = "yellowgreen", alpha = 0.5) +
+  geom_vline(xintercept = 90, linetype = "dashed", color = "red") +
+  labs(title = "Probability Distribution of Simulated Exam Scores",
+       x = "Score",
+       y = "Density") +
+  theme_minimal()
+```
+
+## **Cvičení 5: Odhad CDF z empirických dat**
+
+Použijte výsledky testu ze Cvičení 4, vypočítejte a vykreslete empirickou distribuční funkci (CDF). Odhadněte pravděpodobnost, že student získá méně než 60 bodů.
+
+```{r}
+set.seed(42)
+# calculate the empirical CDF and the probability of scoring less than 60
+test_scores_ecdf <- ecdf(test_scores)
+prob_less_than_60 <- test_scores_ecdf(60)
+prob_less_than_60
+
+# plot the empirical CDF
+ggplot(data.frame(x = test_scores), aes(x)) +
+  stat_ecdf(geom = "step", color = "blue", size = 1.2) +
+  geom_vline(xintercept = 60, linetype = "dashed", color = "red") +
+  annotate("text", x = 60, y = 0.1, label = paste("P(Score < 60) =", round(prob_less_than_60, 4)), color = "red", hjust = -0.1) +
+  labs(title = "Empirical Cumulative Distribution Function (CDF)",
+       x = "Score",
+       y = "Cumulative Probability") +
+  theme_minimal()
+```
+
+## **Cvičení 6: Vztah mezi PMF a očekávanou hodnotou**
+
+Firma prodává produkt za 5 USD. Pravděpodobnost prodeje u jednoho zákazníka je 0,1 a kontaktuje 100 zákazníků.
+
+1. Simulujte počet prodejů ze 100 kontaktů.
+2. Vypočítejte očekávaný zisk z těchto prodejů.
+3. Vykreslete PMF počtu prodejů.
+
+```{r}
+set.seed(42)
+# parameters
+n_customers <- 100    # number of customers contacted
+p_sale <- 0.1         # probability of a sale
+
+# simulate number of sales
+sales <- rbinom(1, size = 100, prob = 0.1)
+sales
+
+# calculate the expected revenue
+revenue <- sales * 5
+revenue
+
+# plot the PMF of the number of sales
+pmf_data <- data.frame(sales = 0:100, 
+                       probability = dbinom(0:100, size = 100, prob = 0.1))
+
+ggplot(pmf_data, aes(x = sales, y = probability)) +
+  geom_bar(stat = "identity", fill = "hotpink1", color = "black") +
+  labs(title = "PMF of Number of Sales",
+       x = "Number of Sales",
+       y = "Probability") +
+  theme_minimal()
+```
+
+## **Cvičení 7: Porovnání dvou spojitých náhodných veličin**
+
+Simulujte dvě spojité náhodné veličiny:
+
+1. X \~ N(0, 1)
+
+2. Y \~ N(3, 1.5)
+
+3. Vykreslete hustoty pravděpodobnosti (PDF) obou veličin na jednom grafu.
+
+4. Vypočítejte pravděpodobnost, že X > Y.
+
+```{r}
+set.seed(42)
+library(dplyr)
+library(tidyr)
+
+# X ~ N(0, 1) and Y ~ N(3, 1.5)
+n <- 1000
+X <- rnorm(n, mean = 0, sd = 1)
+Y <- rnorm(n, mean = 3, sd = 1.5)
+
+# plot the PDFs of X and Y on the same plot
+pdf_data <- data.frame(
+  value = c(X, Y),
+  variable = c(rep("X ~ N(0,1)", n), rep("Y ~ N(3,1.5)", n))
+)
+
+ggplot(pdf_data, aes(x = value, fill = variable)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "PDFs of X and Y",
+       x = "Value",
+       y = "Density") +
+  theme_minimal()
+
+# calculate the probability that X > Y
+prob_X_greater_Y <- mean(X > Y)
+prob_X_greater_Y
+```
+
+## **Cvičení 8: Rovnoměrné rozdělení – náhodná procházka**
+
+Vygenerujte 1000 kroků náhodné procházky, kde každý krok je náhodně zvolen z rovnoměrného rozdělení mezi -1 a 1.
+
+1. Vykreslete trajektorii náhodné procházky.
+2. Vypočítejte a vykreslete kumulativní součet kroků.
+
+```{r}
+set.seed(42)
+n_steps <- 1000
+steps <- runif(n_steps, min = -1, max = 1)
+
+# calculate the cumulative sum (random walk)
+random_walk <- cumsum(steps)
+
+# plot the trajectory of the random walk
+step_data <- data.frame(step = 1:n_steps, position = steps)
+ggplot(step_data, aes(x = step, y = position)) +
+  geom_point(color = "deeppink4") +
+  labs(title = "Trajectory of Random Walk Steps",
+       x = "Step",
+       y = "Step Value") +
+  theme_minimal()
+
+# cumulative sum plot
+walk_data <- data.frame(step = 1:n_steps, position = random_walk)
+ggplot(walk_data, aes(x = step, y = position)) +
+  geom_line(color = "dodgerblue") +
+  labs(title = "Cumulative Sum of Random Walk",
+       x = "Step",
+       y = "Cumulative Position") +
+  theme_minimal()
+```
