@@ -1,0 +1,184 @@
+---
+title: "Průzkumná analýza dat"
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Průzkumná analýza dat (EDA)
+
+## **1. Co je Průzkumná analýza dat (EDA)?**
+
+* **Definice**: EDA je první krok v analýze dat, který slouží k souhrnu jejich hlavních charakteristik, často pomocí vizualizačních metod.
+* **Účel**: Porozumět struktuře dat, odhalit odlehlé hodnoty nebo anomálie, rozpoznat vzorce a generovat hypotézy.
+* **Důležitost**: Před prováděním složitějších statistických analýz pomáhá EDA ověřit kvalitu dat a odhalit předpoklady, které mohou ovlivnit další fáze analýzy.
+
+## **2. Kroky v rámci EDA**
+
+### 1. **Porozumění typům a struktuře dat**
+
+* **Typy dat**: Kategorická (nominální, ordinální) vs. Numerická (kontinuální, diskrétní).
+* **Datové struktury v R**: Základní znalosti o `data.frame`, `factors`, `lists` a numerických typech (`integers`, `doubles`).
+
+```{r}
+# Načtení a zobrazení struktury dat
+data <- read.csv("titanic.csv")
+str(data)
+summary(data)
+```
+
+### 2. **Souhrnné statistiky**
+
+#### - **Numerické proměnné**:
+
+* Průměr, medián, směrodatná odchylka, rozsah, minimum, maximum, kvartily.
+* Užitečné funkce: `mean()`, `median()`, `sd()`, `range()`, `summary()`.
+
+```{r}
+# Souhrnné statistiky
+summary(data$Fare)
+mean(data$Fare, na.rm = TRUE)
+```
+
+#### - **Kategorické proměnné**:
+
+* Počty výskytů a proporce.
+* Užitečné funkce: `table()`, `prop.table()`.
+
+```{r}
+# Frekvenční tabulka
+table(data$Cabin)
+```
+
+### 3. **Vizualizační techniky**
+
+#### - **Histogram**: Vizualizuje rozložení jedné spojité proměnné.
+
+```{r}
+library(ggplot2)
+
+ggplot(data, aes(x = Age)) +
+  geom_histogram(binwidth = 15, fill = "lightblue", color = "black") +
+  labs(title = "Histogram věku", x = "Věk", y = "Frekvence")
+```
+
+#### - **Boxplot (krabicový graf)**: Zobrazuje rozložení, střední hodnotu a možné odlehlé hodnoty, často podle kategorií.
+
+```{r}
+ggplot(data, aes(x = factor(Survived), y = Age)) +
+  geom_boxplot(fill = "lightblue") +
+  labs(title = "Boxplot věku podle přežití", x = "Přežil", y = "Věk")
+```
+
+#### - **Sloupcový graf**: Zobrazuje frekvence kategoriálních proměnných.
+
+```{r}
+ggplot(data, aes(x = Embarked)) +
+  geom_bar(fill = "lightcoral") +
+  labs(title = "Sloupcový graf přístavů nástupu", x = "Přístav", y = "Počet")
+```
+
+#### - **Bodový graf**: Ukazuje vztah mezi dvěma spojitými proměnnými.
+
+```{r}
+ggplot(data, aes(x = Age, y = Fare)) +
+  geom_point(color = "steelblue") +
+  labs(title = "Bodový graf: Věk vs. Cena", x = "Věk", y = "Cena")
+```
+
+### 4. **Detekce odlehlých hodnot**
+
+* **Odlehlé hodnoty**: Hodnoty, které se výrazně liší od ostatních v datové sadě.
+* **Metody identifikace**: Boxploty, z-skóre (standardizace), metoda IQR.
+
+```{r}
+# Identifikace odlehlých hodnot pomocí IQR
+Q1 <- quantile(data$Age, 0.25, na.rm=TRUE)
+Q3 <- quantile(data$Age, 0.75, na.rm=TRUE)
+IQR <- Q3 - Q1
+outliers <- data$Age[data$Age < (Q1 - 1.5 * IQR) | data$Age > (Q3 + 1.5 * IQR)]
+outliers <- outliers[!is.na(outliers)] # odstranění NA
+outliers
+```
+
+### 5. **Zpracování chybějících hodnot**
+
+* **Zjištění chybějících hodnot**: Zkontrolujte přítomnost a rozsah chybějících hodnot.
+
+```{r}
+# Kontrola chybějících hodnot
+colSums(is.na(data))
+```
+
+* **Zpracování chybějících hodnot**: Obvyklé přístupy zahrnují odstranění nebo imputaci (průměrem / mediánem).
+
+### 6. **Zkoumání vztahů mezi proměnnými**
+
+#### - **Korelační matice**: Ukazuje lineární vztahy mezi páry spojitých proměnných.
+
+```{r}
+library(reshape2)
+cor_matrix <- cor(data[, sapply(data, is.numeric)], use = "complete.obs")
+cor_data <- melt(cor_matrix)
+
+ggplot(cor_data, aes(x = Var1, y = Var2, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient2(low = "blue", mid = "white", high = "red", midpoint = 0) +
+  labs(title = "Korelační matice", x = "", y = "") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+#### - **Kontingenční tabulka**: Analyzuje vztah mezi dvěma kategoriálními proměnnými.
+
+```{r}
+# Kontingenční tabulka
+table(data$Survived, data$Sex)
+```
+
+#### - **Analýza hlavních komponent (PCA)**:
+
+PCA je metoda redukce dimenzionality, která transformuje data na sadu ortogonálních komponent zachycujících největší variabilitu. Umožňuje zjednodušení dat, odhalení struktur a vizualizaci ve 2D/3D prostoru.
+
+```{r}
+library(dplyr)
+library(magrittr)
+
+# Výběr numerických sloupců pro PCA
+numeric_columns <- data %>%
+  dplyr::select(Age, Fare, SibSp, Parch, Survived) %>%
+  na.omit()  # odstranění chybějících hodnot
+
+# provedení PCA
+pca_result <- prcomp(numeric_columns, scale. = TRUE)
+pca_scores <- as.data.frame(pca_result$x)
+
+# přidání sloupce přežití
+pca_scores$survived <- numeric_columns$Survived
+```
+
+```{r}
+ggplot(pca_scores, aes(x = PC1, y = PC2)) +
+  geom_point(alpha = 0.7, aes(color = survived)) +
+  labs(title = "PC1 vs PC2", x = "PC1", y = "PC2") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(pca_scores, aes(x = PC2, y = PC3)) +
+  geom_point(alpha = 0.7, aes(color = survived)) +
+  labs(title = "PC2 vs PC3", x = "PC2", y = "PC3") +
+  theme_minimal()
+```
+
+```{r}
+ggplot(pca_scores, aes(x = PC1, y = PC3)) +
+  geom_point(alpha = 0.7, aes(color = survived)) +
+  labs(title = "PC1 vs PC3", x = "PC1", y = "PC3") +
+  theme_minimal()
+```
+
+## **3. Klíčové poznatky a další kroky**
+
+* **Shrnutí zjištění**: Stručně popište hlavní poznatky, neobvyklé vzory nebo problémy (např. šikmost, velké množství chybějících hodnot).
+* **Generování hypotéz**: Na základě EDA navrhněte možné hypotézy nebo otázky pro další analýzu.
