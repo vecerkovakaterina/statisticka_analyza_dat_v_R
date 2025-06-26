@@ -1,0 +1,181 @@
+---
+title: 'Průzkumná analýza dat: Cvičení'
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Cvičení
+
+## Porozumění a shrnutí dat
+
+### Cvičení 1: Načtení a náhled dat
+
+**Úkol:** Načtěte dataset Titanic z CSV souboru a zobrazte prvních 10 řádků pro seznámení se s daty.
+
+```{r}
+library(tidyverse, quietly = TRUE)
+data <- read.csv("titanic.csv")
+head(data, n=10)
+```
+
+### Cvičení 2: Struktura dat a souhrnné statistiky
+
+**Úkol:**
+
+1. Použijte funkci `str()`, abyste prozkoumali strukturu dat a zjistili datové typy jednotlivých sloupců.
+2. Získejte souhrn všech proměnných pomocí `summary()`. Identifikujte zajímavé hodnoty nebo možné odlehlé body.
+
+```{r}
+str(data)
+```
+
+```{r}
+summary(data)
+```
+
+### Cvičení 3: Kontrola chybějících hodnot
+
+**Úkol:** Použijte funkci `is.na()` k ověření přítomnosti chybějících hodnot. Shrňte, které sloupce obsahují chybějící hodnoty a jak často.
+
+```{r}
+colSums(is.na(data))
+```
+
+## Vizualizace klíčových proměnných
+
+### Cvičení 4: Rozložení věku
+
+**Úkol:** Vytvořte histogram pro sloupec `Age`, abyste porozuměli jeho rozložení. Zvolte vhodný počet intervalů (např. 20) a popište osy.
+
+```{r}
+library(ggplot2, quietly = TRUE)
+ggplot(data, aes(x=Age)) + geom_histogram(bins = 20, color = "darkolivegreen", fill = "darkolivegreen1") + xlab("Age") + ylab("Frequency")
+```
+
+### Cvičení 5: Míra přežití podle pohlaví
+
+**Úkol:** Vytvořte sloupcový graf, který zobrazí míru přežití (`Survived`) podle pohlaví (`Sex`). To pomůže porozumět vlivu pohlaví na přežití.
+
+```{r}
+ggplot(data, aes(x = Sex, y = Survived)) +
+  geom_col(color = "orange3", fill = "orange2") +
+  labs(title = "Barplot of Gender by Survived", x = "Survived", y = "Gender")
+```
+
+### Cvičení 6: Rozložení ceny podle třídy
+
+**Úkol:** Vytvořte boxplot znázorňující rozložení `Fare` podle cestovní třídy (`Pclass`). Interpretujte, zda se ceny mezi třídami liší.
+
+```{r}
+ggplot(data, aes(x = as.factor(Pclass), y = Fare)) +
+  geom_boxplot(fill = "tomato1") +
+  labs(title = "Boxplot of Age by Survived", x = "Passenger Class", y = "Fare")
+```
+
+## Zpracování chybějících dat
+
+### Cvičení 7: Imputace chybějícího věku
+
+**Úkol:** Nahraďte chybějící hodnoty ve sloupci `Age` mediánem. Ověřte, že ve sloupci nezůstaly žádné chybějící hodnoty.
+
+```{r}
+# z histogramu výše vidíme, že rozdělení dat je zešikmené, proto budeme chybějící hodnoty nahrazovat mediánem sloupce
+age_median <- median(data$Age, na.rm = TRUE)
+data <- data %>% mutate(Age = replace_na(Age, age_median))
+
+# zkontrolovat chybějící hodnoty po nahrazení
+sum(is.na(data$Age))
+```
+
+### Cvičení 8: Náhrada chybějících hodnot ve sloupci `Embarked`
+
+**Úkol:** Nahraďte chybějící hodnoty ve sloupci `Embarked` nejčastěji se vyskytujícím přístavem. Zobrazte výsledek pro ověření změn.
+
+```{r}
+embarked_without_na <- data %>% select(Embarked) %>% drop_na()
+frequency_table <- table(embarked_without_na)
+embarked_mode <- names(frequency_table)[which.max(frequency_table)]
+data <- data %>% mutate(Embarked = replace_na(Embarked, embarked_mode))
+
+# zkontrolovat chybějící hodnoty po nahrazení
+sum(is.na(data$Embarked))
+```
+
+## Základní analýza vztahů
+
+### Cvičení 9: Vztah mezi cenou a přežitím
+
+**Úkol:** Vytvořte boxplot prozkoumávající vztah mezi `Fare` a `Survived`. Co tato vizualizace naznačuje o vlivu ceny na přežití?
+
+```{r}
+ggplot(data, aes(x = as.factor(Survived), y = Fare)) +
+  geom_boxplot(fill = "firebrick4") +
+  labs(title = "Boxplot of Fare by Survived", x = "Survived", y = "Fare")
+```
+
+### Cvičení 10: Korelační analýza
+
+**Úkol:** Vytvořte korelační matici pro numerické sloupce (např. `Age`, `Fare`, `SibSp`, `Parch`). Interpretujte silné pozitivní nebo negativní korelace.
+
+```{r}
+library(reshape2, quietly = TRUE)
+correlation_matrix <- round(cor(data %>% select(Survived, Pclass, Age, SibSp, Parch, Fare)), 2)
+correlation_matrix
+melted_correlation_matrix <- melt(correlation_matrix)
+melted_correlation_matrix
+ggplot(data = melted_correlation_matrix, aes(x = Var1, y = Var2, fill = value)) + geom_tile() + xlab("") + ylab("")
+```
+
+## Tvorba nových proměnných (Feature Engineering)
+
+### Cvičení 11: Extrakce titulů ze jmen
+
+**Úkol:** Z `Name` extrahujte titul (např. Mr., Mrs., Miss.) a vytvořte nový sloupec `Title`. Vzácné tituly (méně než 5 výskytů) zařaďte do kategorie "Other". Zobrazte přehled nového sloupce.
+
+```{r}
+# prohlídneme si strukturu sloupce Name
+head(data$Name)
+
+data <- data |> 
+  separate(Name, into = c("last_name", "title_and_first_name"), sep = ", ", remove = FALSE) |> 
+  separate(title_and_first_name, into = c("title", "first_name"), sep = " ", extra = "merge") |> 
+  select(-c(last_name, first_name))
+
+# zkontrolujeme vyxtrahované tituly
+head(data$title)
+
+# zkontrolujeme četnosti titulů
+titles_frequency_table <- table(data$title)
+titles_frequency_table
+
+# sloučíme tituly s frekvencí < 5 do "Other"
+rare_names <- names(titles_frequency_table[titles_frequency_table < 5])
+
+data <- data |> 
+  mutate(title = if_else(title %in% rare_names, "Other", title))
+
+# podíváme se na výsledek
+table(data$title)
+```
+
+### Cvičení 12: Vytvoření proměnné velikost rodiny
+
+**Úkol:** Vytvořte novou proměnnou `FamilySize` kombinací `SibSp` (sourozenci/manželé) a `Parch` (rodiče/děti), která reprezentuje celkový počet členů rodiny na palubě. Zobrazte shrnutí tohoto nového sloupce.
+
+```{r}
+data <- data |>
+  mutate(FamilySize = SibSp + Parch)
+
+summary(data$FamilySize)
+```
+
+## Diskuze
+
+### Cvičení 13: Pozorování a shrnutí
+
+**Úkol:** Stručně shrňte své postřehy z průzkumné analýzy. Zaměřte se na zajímavé vzory, možné odlehlé hodnoty nebo oblasti pro další zkoumání.
+
+```{r}
+# TODO: vaše shrnutí zde
+```

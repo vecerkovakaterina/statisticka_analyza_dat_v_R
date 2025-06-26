@@ -1,0 +1,127 @@
+---
+title: 'Průzkumná analýza dat: Cvičení'
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Cvičení
+
+## Porozumění a shrnutí dat
+
+### Cvičení 1: Načtení a náhled dat
+
+**Úkol:** Načtěte dataset Titanic z CSV souboru a zobrazte prvních 10 řádků pro seznámení se s daty.
+
+```{r}
+# TODO: váš kód zde
+```
+
+### Cvičení 2: Struktura dat a souhrnné statistiky
+
+**Úkol:**
+
+1. Použijte funkci `str()`, abyste prozkoumali strukturu dat a zjistili datové typy jednotlivých sloupců.
+2. Získejte souhrn všech proměnných pomocí `summary()`. Identifikujte zajímavé hodnoty nebo možné odlehlé body.
+
+```{r}
+# TODO: váš kód zde
+```
+
+### Cvičení 3: Kontrola chybějících hodnot
+
+**Úkol:** Použijte funkci `is.na()` k ověření přítomnosti chybějících hodnot. Shrňte, které sloupce obsahují chybějící hodnoty a jak často.
+
+```{r}
+# TODO: váš kód zde
+```
+
+## Vizualizace klíčových proměnných
+
+### Cvičení 4: Rozložení věku
+
+**Úkol:** Vytvořte histogram pro sloupec `Age`, abyste porozuměli jeho rozložení. Zvolte vhodný počet intervalů (např. 20) a popište osy.
+
+```{r}
+# TODO: váš kód zde
+```
+
+### Cvičení 5: Míra přežití podle pohlaví
+
+**Úkol:** Vytvořte sloupcový graf, který zobrazí míru přežití (`Survived`) podle pohlaví (`Sex`). To pomůže porozumět vlivu pohlaví na přežití.
+
+```{r}
+# TODO: váš kód zde
+```
+
+### Cvičení 6: Rozložení ceny podle třídy
+
+**Úkol:** Vytvořte boxplot znázorňující rozložení `Fare` podle cestovní třídy (`Pclass`). Interpretujte, zda se ceny mezi třídami liší.
+
+```{r}
+# TODO: váš kód zde
+```
+
+## Zpracování chybějících dat
+
+### Cvičení 7: Imputace chybějícího věku
+
+**Úkol:** Nahraďte chybějící hodnoty ve sloupci `Age` mediánem. Ověřte, že ve sloupci nezůstaly žádné chybějící hodnoty.
+
+```{r}
+# TODO: váš kód zde
+```
+
+### Cvičení 8: Náhrada chybějících hodnot ve sloupci `Embarked`
+
+**Úkol:** Nahraďte chybějící hodnoty ve sloupci `Embarked` nejčastěji se vyskytujícím přístavem. Zobrazte výsledek pro ověření změn.
+
+```{r}
+# TODO: váš kód zde
+```
+
+## Základní analýza vztahů
+
+### Cvičení 9: Vztah mezi cenou a přežitím
+
+**Úkol:** Vytvořte boxplot prozkoumávající vztah mezi `Fare` a `Survived`. Co tato vizualizace naznačuje o vlivu ceny na přežití?
+
+```{r}
+# TODO: váš kód zde
+```
+
+### Cvičení 10: Korelační analýza
+
+**Úkol:** Vytvořte korelační matici pro numerické sloupce (např. `Age`, `Fare`, `SibSp`, `Parch`). Interpretujte silné pozitivní nebo negativní korelace.
+
+```{r}
+# TODO: váš kód zde
+```
+
+## Tvorba nových proměnných (Feature Engineering)
+
+### Cvičení 11: Extrakce titulů ze jmen
+
+**Úkol:** Z `Name` extrahujte titul (např. Mr., Mrs., Miss.) a vytvořte nový sloupec `Title`. Vzácné tituly (méně než 5 výskytů) zařaďte do kategorie "Other". Zobrazte přehled nového sloupce.
+
+```{r}
+# TODO: váš kód zde
+```
+
+### Cvičení 12: Vytvoření proměnné velikost rodiny
+
+**Úkol:** Vytvořte novou proměnnou `FamilySize` kombinací `SibSp` (sourozenci/manželé) a `Parch` (rodiče/děti), která reprezentuje celkový počet členů rodiny na palubě. Zobrazte shrnutí tohoto nového sloupce.
+
+```{r}
+# TODO: váš kód zde
+```
+
+## Diskuze
+
+### Cvičení 13: Pozorování a shrnutí
+
+**Úkol:** Stručně shrňte své postřehy z průzkumné analýzy. Zaměřte se na zajímavé vzory, možné odlehlé hodnoty nebo oblasti pro další zkoumání.
+
+```{r}
+# TODO: vaše shrnutí zde
+```
