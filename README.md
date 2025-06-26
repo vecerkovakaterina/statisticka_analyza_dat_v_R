@@ -7,8 +7,8 @@ Toto je rozpracovaný projekt
 | Základy programování v R           | ✅        | ✅       | ✅      | ❌                 |
 | Manipulace s daty pomocí tidyverse | ✅        | ✅       | ✅      | ❌                 |
 | Průzkumná analýza dat              | ✅        | ✅       | ✅      | ❌                 |
-| Odhad parametrů                    | ❌        | ❌       | ❌      | ❌                 |
-| Náhodná veličina                   | ❌        | ❌       | ❌      | ❌                 |
+| Odhad parametrů                    | ✅        | ✅       | ✅      | ❌                 |
+| Náhodná veličina                   | ✅        | ✅       | ✅      | ❌                 |
 | Centrální limitní věta             | ❌        | ❌       | ❌      | ❌                 |
 | Intervaly spolehlivosti            | ❌        | ❌       | ❌      | ❌                 |
 | Testování hypotéz, z-test          | ❌        | ❌       | ❌      | ❌                 |
