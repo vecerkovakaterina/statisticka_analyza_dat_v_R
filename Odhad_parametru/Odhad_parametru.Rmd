@@ -1,0 +1,92 @@
+---
+title: "Odhad parametrů"
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Úvod do bodového odhadu
+
+Bodový odhad je statistická metoda používaná k odhadu neznámého populačního parametru na základě výběrových dat. Bodový odhadce poskytuje jednu hodnotu jako odhad parametru. Tato hodnota se nazývá bodový odhad.
+
+## Klíčové pojmy
+
+1. **Populační parametr**: Hodnota popisující vlastnost celé populace, například průměr nebo rozptyl. Obvykle není známá.
+2. **Výběrová statistika**: Hodnota vypočítaná z výběrových dat, která slouží jako odhad populačního parametru.
+3. **Bodový odhadce**: Pravidlo nebo vzorec použitý k výpočtu výběrové statistiky, která odhaduje populační parametr.
+
+Mezi běžné bodové odhadce patří:
+
+* **Výběrový průměr**: Odhad populačního průměru.
+* **Výběrový rozptyl**: Odhad populačního rozptylu.
+
+V tomto tutoriálu si ukážeme, jak tyto běžné bodové odhadce vypočítat a interpretovat v jazyce R.
+
+# Příklady bodového odhadu
+
+Pro příklady použijeme vestavěný dataset `mtcars` v R. Tento dataset obsahuje informace o různých modelech aut, včetně údajů jako spotřeba (mpg), počet válců, výkon motoru (hp) a další.
+
+## Příprava
+
+```{r setup, include=FALSE}
+# načtení potřebných knihoven
+library(ggplot2)
+library(dplyr)
+
+# načtení datasetu mtcars
+data(mtcars)
+```
+
+## Odhad populačního průměru
+
+Výběrový průměr je bodovým odhadem populačního průměru. Vypočítá se jako součet všech hodnot ve vzorku dělený jejich počtem.
+
+### Příklad
+
+Spočítejte výběrový průměr proměnné `mpg` (míle na galon).
+
+```{r}
+# výpočet výběrového průměru proměnné 'mpg'
+mean_mpg <- mean(mtcars$mpg)
+mean_mpg
+```
+
+### Cvičení 1
+
+Spočítejte výběrový průměr proměnné `hp` (koňská síla) v datasetu `mtcars`.
+
+```{r}
+# TODO: váš kód zde
+```
+
+## Odhad populačního rozptylu
+
+Výběrový rozptyl je bodovým odhadem populačního rozptylu. Měří rozptýlení hodnot ve vzorku od jejich průměru.
+
+### Příklad
+
+Spočítejte výběrový rozptyl proměnné `mpg`.
+
+```{r}
+# výpočet výběrového rozptylu proměnné 'mpg'
+var_mpg <- var(mtcars$mpg)
+var_mpg
+```
+
+### Cvičení 2
+
+Spočítejte výběrový rozptyl proměnné `wt` (hmotnost) v datasetu `mtcars`.
+
+```{r}
+# TODO: váš kód zde
+```
+
+### Cvičení 3
+
+Spočítejte výběrový průměr a výběrový rozptyl proměnné `qsec` (čas na 1/4 míle) v datasetu `mtcars`.
+
+```{r}
+# výpočet výběrového průměru a rozptylu proměnné 'qsec'
+# TODO: váš kód zde
+```
+
