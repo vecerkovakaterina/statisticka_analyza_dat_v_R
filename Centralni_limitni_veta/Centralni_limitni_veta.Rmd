@@ -1,0 +1,87 @@
+---
+title: "Centrální limitní věta"
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Centrální limitní věta
+
+## 1. Úvod do centrální limitní věty
+
+V tomto tutoriálu si představíme pojem centrální limitní věty (CLT), proč je důležitá a jak tvoří základ mnoha statistických metod, včetně testování hypotéz a konstrukce intervalů spolehlivosti.
+
+### Co je centrální limitní věta (CLT)?
+
+Centrální limitní věta říká, že rozdělení **průměrů výběrů o dostatečně velké velikosti**, vybraného z libovolné populace, **se blíží normálnímu rozdělení**.
+
+**Jednoduše řečeno:** Když vezmeme průměry různých náhodných vzorků z populace, tyto průměry budou mít tendenci následovat normální rozdělení, jakmile se velikost vzorku zvětšuje – bez ohledu na to, jak je původní data rozložena.
+
+### Klíčové komponenty CLT
+
+1. **Nezávislost**: Vzorky musí být vybírány nezávisle z populace. To znamená, že výběr jednoho vzorku neovlivňuje výběr jiného vzorku.
+2. **Velikost vzorku**: Ačkoli věta platí pro jakoukoli velikost vzorku, větší velikost vzorku (typicky n ≥ 30) poskytuje rozdělení průměrů vzorků, které se více podobá normálnímu rozdělení.
+3. **Konečný střed a rozptyl**: Populace, ze které jsou vzorky vybírány, musí mít konečný střed a konečný rozptyl.
+
+### Demonstrace CLT
+
+```{r}
+# nastavení seedu pro reprodukovatelnost
+set.seed(123)
+
+# generování dat z různých populačních rozdělení
+normal_dist <- rnorm(1000, mean = 50, sd = 10)   # normální rozdělení
+exponential_dist <- rexp(1000, rate = 0.1)       # exponenciální rozdělení
+uniform_dist <- runif(1000, min = 20, max = 80)  # rovnoměrné rozdělení
+
+# funkce pro výběr vzorků a výpočet průměrů vzorků
+sample_means <- function(data, sample_size, num_samples) {
+  means <- replicate(num_samples, mean(sample(data, size = sample_size, replace = TRUE)))
+  return(means)
+}
+
+# nastavení parametrů pro vzorkování
+sample_size <- 30      # velikost vzorku
+num_samples <- 1000    # počet vzorků
+
+# výpočet průměrů vzorků pro každé rozdělení
+normal_means <- sample_means(normal_dist, sample_size, num_samples)
+exponential_means <- sample_means(exponential_dist, sample_size, num_samples)
+uniform_means <- sample_means(uniform_dist, sample_size, num_samples)
+
+# vykreslení histogramů pro vizualizaci rozdělení a průměrů vzorků
+par(mfrow = c(2, 3))  # nastavení mřížky grafů: dva řádky, tři sloupce
+
+# graf normálního rozdělení
+hist(normal_dist, main = "Normální rozdělení", 
+     xlab = "Hodnota", col = "skyblue", border = "white", freq = FALSE)
+lines(density(normal_dist), col = "blue", lwd = 2)
+
+# graf exponenciálního rozdělení
+hist(exponential_dist, main = "Exponenciální rozdělení", 
+     xlab = "Hodnota", col = "lightgreen", border = "white", freq = FALSE)
+lines(density(exponential_dist), col = "green", lwd = 2)
+
+# graf rovnoměrného rozdělení
+hist(uniform_dist, main = "Rovnoměrné rozdělení", 
+     xlab = "Hodnota", col = "orange", border = "white", freq = FALSE)
+lines(density(uniform_dist), col = "red", lwd = 2)
+
+# graf průměrů vzorků pro normální rozdělení
+hist(normal_means, main = "Průměry vzorků", 
+     xlab = "Průměr vzorku", col = "lightblue", border = "white", freq = FALSE)
+lines(density(normal_means), col = "blue", lwd = 2)
+
+# graf průměrů vzorků pro exponenciální rozdělení
+hist(exponential_means, main = "Průměry vzorků", 
+     xlab = "Průměr vzorku", col = "lightgreen", border = "white", freq = FALSE)
+lines(density(exponential_means), col = "green", lwd = 2)
+
+# graf průměrů vzorků pro rovnoměrné rozdělení
+hist(uniform_means, main = "Průměry vzorků", 
+     xlab = "Průměr vzorku", col = "orange", border = "white", freq = FALSE)
+lines(density(uniform_means), col = "red", lwd = 2)
+
+# Obnovení výchozího nastavení vykreslování
+par(mfrow = c(1, 1))
+```

@@ -1,0 +1,87 @@
+---
+title: 'Centrální limitní věta: Cvičení'
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Centrální limitní věta: Cvičení
+
+## Cvičení 1: Simulace populačního rozdělení
+Vytvořte populační rozdělení pomocí nenormálního rozdělení (např. exponenciálního nebo rovnoměrného).  
+- Nasimulujte populaci o 10 000 hodnotách.  
+- Vykreslete rozdělení populace.
+
+```{r}
+# TODO zde napište svůj kód
+```
+
+## Cvičení 2: Vzorkování z populace
+
+Vyberte náhodné vzorky z populace vytvořené v Cvičení 1.
+
+* Vyberte 30 náhodných vzorků, každý o velikosti 50 pozorování.
+* Spočítejte a uložte průměry těchto vzorků.
+
+```{r}
+# TODO zde napište svůj kód
+```
+
+## Cvičení 3: Rozdělení průměrů vzorků
+
+Vykreslete rozdělení průměrů vzorků spočítaných v Cvičení 2.
+
+* Použijte histogram nebo hustotní graf k vizualizaci rozdělení průměrů vzorků.
+
+```{r}
+# TODO zde napište svůj kód
+```
+
+## Cvičení 4: Ověření CLT
+
+* Vytvořte funkci, která bude simulovat vzorkování z populace a vykreslí rozdělení průměrů vzorků.
+* Otestujte funkci s různými velikostmi vzorku (např. 10, 30, 100) a pozorujte, jak se mění rozdělení průměrů vzorků.
+
+```{r}
+# TODO zde napište svůj kód
+```
+
+## Cvičení 5: Standardní chyba průměru
+
+* Spočítejte standardní chybu průměru (SEM) pro průměry vzorků z Cvičení 2.
+* Vysvětlete, jak SEM souvisí s velikostí vzorku a variabilitou populace.
+
+```{r}
+# TODO zde napište svůj kód
+```
+
+## Cvičení 6: Intervaly spolehlivosti
+
+Pomocí průměrů vzorků vypočítaných v Cvičení 2:
+
+* Vypočítejte 95% interval spolehlivosti pro populační průměr na základě těchto průměrů.
+* Interpretujte, co tento interval znamená v kontextu vaší simulace.
+
+```{r}
+# TODO zde napište svůj kód
+```
+
+## Cvičení 7: Aplikace v reálném světě
+
+Vyhledejte datovou sadu (např. výšky osob, výsledky testů) a:
+
+* Načtěte datovou sadu do R a prozkoumejte její rozdělení.
+* Pomocí CLT proveďte vzorkování a ukažte větu tím, že porovnáte rozdělení průměrů vzorků s rozdělením populace.
+
+```{r}
+# TODO zde napište svůj kód
+```
+
+## Cvičení 8: Reflexe
+
+Napište krátkou úvahu o tom, jak je porozumění centrální limitní větě užitečné v reálných situacích analýzy dat.
+
+```{r}
+# TODO zde napište svou reflexi
+```
+
