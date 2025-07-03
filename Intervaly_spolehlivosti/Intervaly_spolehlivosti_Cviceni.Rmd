@@ -1,0 +1,80 @@
+---
+title: 'Intervaly spolehlivosti: Cvičení'
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Cvičení
+
+## **Cvičení 1: Interval spolehlivosti pro průměr (velký vzorek, Z-statistika)**
+
+1. Máte vzorek 50 náhodně vygenerovaných hodnot z normálního rozdělení se střední hodnotou 65 a směrodatnou odchylkou 10. Vypočítejte 95% interval spolehlivosti pro průměr pomocí Z-statistiky (předpokládejte n > 30).  
+
+```{r}
+set.seed(123)
+sample_data <- rnorm(50, mean = 65, sd = 10)
+# Výpočet 95% CI pomocí Z-statistiky
+# TODO Zde napište svůj kód
+```
+
+## **Cvičení 2: Interval spolehlivosti pro průměr (malý vzorek, t-statistika)**
+
+2. Máte malý vzorek 15 měření z populace s neznámou střední hodnotou a směrodatnou odchylkou. Hodnoty vzorku jsou:
+   `c(12, 15, 14, 11, 15, 18, 16, 14, 13, 19, 21, 16, 14, 12, 20)`.
+   Vypočítejte 95% interval spolehlivosti pro průměr pomocí t-statistiky (protože n < 30).
+
+```{r}
+sample_data <- c(12, 15, 14, 11, 15, 18, 16, 14, 13, 19, 21, 16, 14, 12, 20)
+# Výpočet 95% CI pomocí t-statistiky
+# TODO Zde napište svůj kód
+```
+
+## **Cvičení 3: Vliv velikosti vzorku na interval spolehlivosti**
+
+3. Vygenerujte dva vzorky — jeden o velikosti 20 a druhý o velikosti 100 — z normálního rozdělení se střední hodnotou 50 a směrodatnou odchylkou 8.
+   Vypočítejte 95% interval spolehlivosti pro průměr obou vzorků.
+   Porovnejte šířky obou intervalů a vysvětlete, jak velikost vzorku ovlivňuje šířku intervalu.
+
+```{r}
+set.seed(456)
+sample_20 <- rnorm(20, mean = 50, sd = 8)
+sample_100 <- rnorm(100, mean = 50, sd = 8)
+# Výpočet 95% CI pro sample_20 a sample_100
+# TODO Zde napište svůj kód
+```
+
+## **Cvičení 4: Vizualizace intervalů spolehlivosti pomocí ggplot2**
+
+4. Použijte vzorek 100 datových bodů vygenerovaných z normálního rozdělení (průměr = 70, sd = 12). Vygenerujte 1000 bootstrapovaných průměrů a vytvořte histogram.
+   Vykreslete 95% interval spolehlivosti těchto průměrů na histogram pomocí `ggplot2`.
+
+```{r}
+library(ggplot2)
+set.seed(789)
+sample_data <- rnorm(100, mean = 70, sd = 12)
+# Bootstrap a vykreslení 95% CI pro průměry
+# TODO Zde napište svůj kód
+```
+
+## **Cvičení 5: Interpretace intervalů spolehlivosti**
+
+5. Vypočítali jste 95% interval spolehlivosti pro průměr datové sady a získali jste interval \[40.5, 49.5].
+   a. Interpretujte tento výsledek v kontextu intervalů spolehlivosti.
+   b. Pokud zvýšíte úroveň spolehlivosti na 99 %, co očekáváte, že se stane se šířkou intervalu?
+
+```{r}
+# TODO Vaše interpretace zde
+```
+
+## **Cvičení 6: Výpočet intervalů spolehlivosti pomocí vestavěné funkce**
+
+6. Použijte vestavěnou funkci `t.test()` v R pro výpočet intervalu spolehlivosti pro následující datovou sadu:
+   `c(5.1, 5.4, 5.9, 6.2, 5.8, 5.7, 6.1, 5.6, 5.5, 6.3)`.
+   Vypočítejte 99% interval spolehlivosti pro průměr těchto dat.
+
+```{r}
+data <- c(5.1, 5.4, 5.9, 6.2, 5.8, 5.7, 6.1, 5.6, 5.5, 6.3)
+# Výpočet 99% CI pomocí t.test()
+# TODO Zde napište svůj kód
+```

@@ -1,0 +1,129 @@
+---
+title: "Intervaly spolehlivosti"
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Intervaly spolehlivosti
+
+## 1. **Úvod do intervalů spolehlivosti**
+- **Co je interval spolehlivosti (CI)?**
+  - Interval spolehlivosti udává rozmezí hodnot, které s určitou mírou spolehlivosti (např. 95 %) pravděpodobně obsahuje populační parametr (např. průměr).
+  - Namísto jednoho bodového odhadu poskytuje intervalový odhad.
+
+- **Proč jsou intervaly spolehlivosti užitečné?**
+  - Zohledňují variabilitu vzorkování.
+  - Poskytují více informací než bodový odhad, protože ukazují přesnost odhadu.
+  - Čím širší je interval, tím méně přesný je odhad, ale tím vyšší je jistota; čím užší interval, tím větší přesnost, ale menší jistota.
+
+## 2. **Intervaly spolehlivosti pro průměr**
+- **Případ 1: Velké vzorky (n > 30, Z-statistika)**
+  - Pokud je velikost vzorku velká (n > 30), používá se **Z-statistika** k výpočtu CI pro průměr.
+  - **Vzorec**:  
+   \[
+   CI = \bar{x} \pm Z_{\alpha/2} \times \left(\frac{s}{\sqrt{n}}\right)
+   \]
+    - \( \bar{x} \) = průměr výběru  
+    - \( Z_{\alpha/2} \) = kritická hodnota Z pro požadovanou úroveň spolehlivosti (např. 1.96 pro 95% CI)  
+    - \( s \) = směrodatná odchylka výběru  
+    - \( n \) = velikost výběru
+
+  - **Příklad v R:**
+     
+```{r}
+# Interval spolehlivosti pro n > 30
+x <- rnorm(100, mean = 100, sd = 15)
+n <- length(x)
+x_bar <- mean(x)
+z <- qnorm(0.975)  # pro 95% úroveň spolehlivosti
+se <- sd(x) / sqrt(n)
+lower <- x_bar - z * se
+upper <- x_bar + z * se
+c(lower, upper)
+```
+
+* **Případ 2: Malé vzorky (n < 30, t-statistika)**
+
+  * Pro malé velikosti vzorku (n < 30) se místo Z-statistiky používá **t-statistika**.
+  * **Vzorec**:
+
+  $$
+  CI = \bar{x} \pm t_{\alpha/2, df} \times \left(\frac{s}{\sqrt{n}}\right)
+  $$
+
+  * $t_{\alpha/2, df}$ = kritická hodnota t (závisí na hladině spolehlivosti a stupních volnosti, df = n - 1)
+
+  * Ostatní symboly jsou stejné jako u velkých vzorků.
+
+  * **Příklad v R:**
+
+```{r}
+# Interval spolehlivosti pro n < 30
+x <- rnorm(20, mean = 100, sd = 15)
+n <- length(x)
+x_bar <- mean(x)
+t_stat <- qt(0.975, df = n - 1)
+se <- sd(x) / sqrt(n)
+lower <- x_bar - t_stat * se
+upper <- x_bar + t_stat * se
+c(lower, upper)
+```
+
+## 3. **Interpretace intervalů spolehlivosti**
+
+* **Jak interpretovat interval spolehlivosti**:
+
+  * 95% interval spolehlivosti znamená: „S 95% jistotou můžeme říci, že skutečný populační průměr leží v tomto intervalu.“
+
+    * **Příklad**: Pokud je CI pro průměrnou výšku populace \[165, 175], znamená to, že s 95% jistotou odhadujeme, že skutečný průměr výšky se nachází mezi 165 a 175 cm.
+
+* **Důležité poznámky**:
+
+  * **Širší intervaly** značí větší nejistotu.
+  * **Užší intervaly** značí větší přesnost.
+
+## 4. **Vizualizace intervalů spolehlivosti**
+
+* **Vykreslování CI v R**:
+
+  * Vizualizace CI pomáhá pochopit nejistotu spojenou s bodovým odhadem.
+  * Příklad: Bootstrapping intervalů spolehlivosti pro průměry vzorků.
+
+```{r}
+library(ggplot2, quiet=TRUE)
+# Vzorek dat a výpočet CI
+x <- rnorm(100, mean = 100, sd = 15)
+boot_means <- replicate(1000, mean(sample(x, size = 100, replace = TRUE)))
+ci <- quantile(boot_means, c(0.025, 0.975))
+
+# Vizualizace CI
+ggplot(data.frame(x = boot_means), aes(x = x)) +
+ geom_histogram(binwidth = 1, fill = "lightblue", color = "black") +
+ geom_vline(xintercept = ci, color = "red", linetype = "dashed") +
+ labs(title = "Bootstrap distribuce s 95% intervalem spolehlivosti", x = "Průměry vzorků")
+```
+
+## 5. **Slovník pojmů**
+
+| **Anglický pojem**            | **Český překlad**              | **Vysvětlení**                                                                                                               |
+| ----------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Confidence Interval (CI)      | Interval spolehlivosti         | Rozmezí hodnot, které s určitou pravděpodobností obsahuje skutečný populační parametr.                                       |
+| Confidence Level              | Úroveň spolehlivosti           | Procento, které udává, jak často skutečný parametr leží v intervalu (např. 95 %).                                            |
+| Significance Level ($\alpha$) | Hladina významnosti ($\alpha$) | Pravděpodobnost, že zamítneme nulovou hypotézu, i když je pravdivá. Pro CI platí $\alpha = 1 - \text{úroveň spolehlivosti}$. |
+| Sample Mean ($\bar{x}$)       | Průměr výběru                  | Průměr hodnot z výběru, použitý jako bodový odhad populačního průměru.                                                       |
+| Standard Error (SE)           | Standardní chyba               | Směrodatná odchylka rozdělení průměru vzorků.                                                                                |
+| Z-statistic                   | Z-statistika                   | Používá se pro velké vzorky (n > 30) při výpočtu CI.                                                                         |
+| t-statistic                   | t-statistika                   | Používá se pro malé vzorky (n < 30) při výpočtu CI.                                                                          |
+| Sample Size (n)               | Velikost výběru                | Počet pozorování ve vzorku.                                                                                                  |
+| Population Parameter          | Populační parametr             | Hodnota (např. průměr), kterou se snažíme odhadnout z výběru.                                                                |
+| Margin of Error               | Chyba odhadu                   | Hodnota přičtená a odečtená od bodového odhadu pro vytvoření intervalu.                                                      |
+| Degrees of Freedom (df)       | Stupně volnosti                | U t-rozdělení platí df = n - 1, kde n je velikost vzorku.                                                                    |
+| Critical Value                | Kritická hodnota               | Hodnota ze Z- nebo t-rozdělení, která určuje velikost chyby odhadu.                                                          |
+
+# Závěr
+
+* Intervaly spolehlivosti nám dávají rozmezí, ve kterém se pravděpodobně nachází skutečný populační parametr.
+* Pro velké vzorky používáme Z-statistiku, pro malé vzorky t-statistiku.
+* Šířka intervalu závisí na velikosti vzorku, úrovni spolehlivosti a variabilitě dat.
+
