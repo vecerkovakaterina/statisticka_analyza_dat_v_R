@@ -9,10 +9,10 @@ Toto je rozpracovaný projekt
 | Průzkumná analýza dat              | ✅        | ✅       | ✅      | ❌                 |
 | Odhad parametrů                    | ✅        | ✅       | ✅      | ❌                 |
 | Náhodná veličina                   | ✅        | ✅       | ✅      | ❌                 |
-| Centrální limitní věta             | ❌        | ❌       | ❌      | ❌                 |
-| Intervaly spolehlivosti            | ❌        | ❌       | ❌      | ❌                 |
-| Testování hypotéz, z-test          | ❌        | ❌       | ❌      | ❌                 |
-| t-testy                            | ❌        | ❌       | ❌      | ❌                 |
+| Centrální limitní věta             | ✅        | ✅       | ✅      | ❌                 |
+| Intervaly spolehlivosti            | ✅        | ✅       | ✅      | ❌                 |
+| Testování hypotéz, z-test          | ✅        | ✅       | ✅      | ❌                 |
+| t-testy                            | ✅        | ✅       | ✅      | ❌                 |
 | ANOVA                              | ❌        | ❌       | ❌      | ❌                 |
 | Korelace, regrese                  | ❌        | ❌       | ❌      | ❌                 |
 
