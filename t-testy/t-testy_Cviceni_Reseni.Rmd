@@ -1,0 +1,132 @@
+---
+title: "t-testy: Cvičení Řešení"
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Cvičení
+
+## **Cvičení 1: Z-test pro jeden výběr**
+1. Výrobce tvrdí, že průměrná hmotnost určitého výrobku je 500 gramů. Vzorek 60 výrobků má průměrnou hmotnost 510 gramů a populační směrodatnou odchylku 20 gramů. Ověřte tvrzení výrobce na hladině významnosti 5 %.
+   - Stanovte hypotézy.
+   - Proveďte Z-test pro jeden výběr a rozhodněte.
+
+```{r}
+x_bar <- 510  # Průměr výběru
+mu_0 <- 500   # Populační průměr podle nulové hypotézy
+sigma <- 20   # Populační směrodatná odchylka
+n <- 60       # Velikost výběru
+alpha <- 0.05  # Hladina významnosti
+
+# Z-test
+z <- (x_bar - mu_0) / (sigma / sqrt(n))
+z
+
+# Kritická hodnota a p-hodnota
+z_critical <- qnorm(1 - alpha/2)  # Dvoustranný test
+p_value <- 2 * (1 - pnorm(abs(z)))
+z_critical
+p_value
+```
+
+## **Cvičení 2: Jednostranný Z-test (pravostranný)**
+
+2. Výzkumník se domnívá, že průměrné skóre ve standardizovaném testu je nižší než 75. Vzorek 40 studentů má průměrné skóre 78 a známou populační směrodatnou odchylku 8. Ověřte hypotézu výzkumníka na hladině významnosti 1 % (pravostranný test).
+
+```{r}
+x_bar <- 78   # Průměr výběru
+mu_0 <- 75    # Populační průměr podle nulové hypotézy
+sigma <- 8    # Populační směrodatná odchylka
+n <- 40       # Velikost výběru
+alpha <- 0.01  # Hladina významnosti
+
+# Z-test
+z <- (x_bar - mu_0) / (sigma / sqrt(n))
+z
+
+# Kritická hodnota a p-hodnota
+z_critical <- qnorm(1 - alpha)  # Pravostranný test
+p_value <- 1 - pnorm(z)
+z_critical
+p_value
+```
+
+## **Cvičení 3: Jednostranný Z-test (levostranný)**
+
+3. Společnost tvrdí, že průměrná životnost jejích žárovek je alespoň 1200 hodin. Vzorek 45 žárovek má průměrnou životnost 1180 hodin a populační směrodatnou odchylku 50 hodin. Otestujte tvrzení společnosti na hladině významnosti 10 % (levostranný test).
+
+```{r}
+x_bar <- 1180  # Průměr výběru
+mu_0 <- 1200   # Populační průměr podle nulové hypotézy
+sigma <- 50    # Populační směrodatná odchylka
+n <- 45        # Velikost výběru
+alpha <- 0.10  # Hladina významnosti
+
+# Z-test
+z <- (x_bar - mu_0) / (sigma / sqrt(n))
+z
+
+# Kritická hodnota a p-hodnota
+z_critical <- qnorm(alpha)  # Levostranný test
+p_value <- pnorm(z)
+z_critical
+p_value
+```
+
+## **Cvičení 4: Z-test pro dva výběry**
+
+4. Porovnáváte průměrnou výšku mužských a ženských studentů. Vzorek 40 mužů má průměrnou výšku 175 cm se směrodatnou odchylkou 10 cm. Vzorek 35 žen má průměrnou výšku 165 cm se směrodatnou odchylkou 8 cm.
+   Ověřte, zda existuje statisticky významný rozdíl mezi průměrnými výškami mužů a žen na hladině významnosti 5 %.
+
+```{r}
+x_bar_male <- 175   # Průměr výšky mužů
+sd_male <- 10       # Směrodatná odchylka mužů
+n_male <- 40        # Počet mužů
+
+x_bar_female <- 165  # Průměr výšky žen
+sd_female <- 8       # Směrodatná odchylka žen
+n_female <- 35       # Počet žen
+
+alpha <- 0.05  # Hladina významnosti
+
+# Z-test pro dva nezávislé výběry
+se <- sqrt((sd_male^2 / n_male) + (sd_female^2 / n_female))
+z <- (x_bar_male - x_bar_female) / se
+z
+
+# Kritická hodnota a p-hodnota
+z_critical <- qnorm(1 - alpha/2)  # Dvoustranný test
+p_value <- 2 * (1 - pnorm(abs(z)))
+z_critical
+p_value
+```
+
+#### **Cvičení 5: Interpretace p-hodnoty**
+
+5. V testu hypotézy pro průměr jste získali Z-statistiku 1,85. Vypočtená p-hodnota je 0,064.
+   * Na základě hladiny významnosti 5 %, zamítli byste nebo nezamítli nulovou hypotézu?
+   * Jaký by byl váš závěr při hladině významnosti 10 %?
+
+```{r}
+z <- 1.85
+p_value <- 0.064
+alpha_5 <- 0.05
+alpha_10 <- 0.10
+
+# Rozhodnutí při hladině významnosti 5 %
+if (p_value < alpha_5) {
+ print("Zamítáme H0 na hladině významnosti 5 %.")  
+} else {
+ print("Nezamítáme H0 na hladině významnosti 5 %.")  
+}
+
+# Rozhodnutí při hladině významnosti 10 %
+if (p_value < alpha_10) {
+ print("Zamítáme H0 na hladině významnosti 10 %.")  
+} else {
+ print("Nezamítáme H0 na hladině významnosti 10 %.")  
+}
+```
+
+

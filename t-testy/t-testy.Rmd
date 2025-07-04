@@ -1,0 +1,127 @@
+---
+title: "t-testy"
+author: "Kateřina Večerková vecerkok@vscht.cz"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+# Testování hypotéz, Z-test
+
+## 1. **Úvod do testování hypotéz**
+  - **Co je testování hypotéz?**
+    - Testování hypotéz je metoda používaná k rozhodování nebo vyvozování závěrů o populačních parametrech na základě výběrových dat.
+    - Spočívá v **porovnání pozorované statistiky** (např. průměru výběru) s předpokládaným populačním parametrem.
+
+  - **Dvě soupeřící hypotézy**:
+    - **Nulová hypotéza (\( H_0 \))**: Hypotéza, že **neexistuje žádný efekt** nebo **žádný rozdíl**. Tato hypotéza se testuje.
+      - Příklad: \( H_0 \): Průměrná výška populace je 170 cm.
+    - **Alternativní hypotéza (\( H_a \))**: Hypotéza, že **existuje efekt** nebo **rozdíl**.
+      - Příklad: \( H_a \): Průměrná výška populace není 170 cm.
+
+  - **Klíčové pojmy**:
+    - **Hladina významnosti (\( \alpha \))**: Pravděpodobnost zamítnutí nulové hypotézy, i když je pravdivá (obvykle 0,05 nebo 5 %).
+    - **p-hodnota**: Pravděpodobnost pozorování výběrových dat, nebo extrémnějších, za předpokladu platnosti nulové hypotézy. Pokud p-hodnota < \( \alpha \), zamítáme \( H_0 \).
+
+## 2. **Z-test**
+
+  - **Z-test** se používá, když:
+    - Velikost výběru je velká (\( n > 30 \)) NEBO
+    - Je znám populační rozptyl (nebo směrodatná odchylka).
+
+  - **Typy Z-testů**:
+    1. **Z-test pro jeden výběr**: Porovnává výběrový průměr se známým populačním průměrem.
+    2. **Z-test pro dva výběry**: Porovnává průměry dvou nezávislých výběrů (za předpokladu známých nebo předpokládaných rozptylů).
+
+## 3. **Kroky pro Z-test s jedním výběrem**
+
+  1. **Formulace hypotéz**:
+      - Nulová hypotéza (\( H_0 \)): \( \mu = \mu_0 \) (populační průměr je roven určité hodnotě).
+      - Alternativní hypotéza (\( H_a \)): \( \mu \neq \mu_0 \) (oboustranný test), \( \mu > \mu_0 \) (pravostranný), nebo \( \mu < \mu_0 \) (levostranný).
+
+  2. **Výpočet Z-statistiky**:
+  \[
+  Z = \frac{\bar{x} - \mu_0}{\frac{\sigma}{\sqrt{n}}}
+  \]
+      - \( \bar{x} \): průměr výběru  
+      - \( \mu_0 \): populační průměr  
+      - \( \sigma \): populační směrodatná odchylka  
+      - \( n \): velikost výběru
+
+  3. **Najděte kritickou hodnotu** (nebo p-hodnotu):
+      - Použijte `qnorm()` pro získání kritické hodnoty podle hladiny významnosti \( \alpha \).
+      - Alternativně spočítejte p-hodnotu pomocí `pnorm()`.
+
+  4. **Rozhodnutí**:
+      - Porovnejte Z-statistiku s kritickou hodnotou, nebo porovnejte p-hodnotu s \( \alpha \).
+      - Pokud \( |Z| \) > kritická hodnota nebo p-hodnota < \( \alpha \), **zamítáme** nulovou hypotézu.
+      - Jinak **nezamítáme** nulovou hypotézu.
+
+## 4. **Příklad: Z-test pro jeden výběr v R**
+
+Předpokládejme, že máme vzorek 50 studentů s průměrnou výškou 172 cm a známe populační směrodatnou odchylku 10 cm. Chceme otestovat, zda se průměrná výška liší od 170 cm při hladině významnosti 5 %.
+
+  1. **Hypotézy**:
+      - \( H_0 \): Průměrná výška je 170 cm (\( \mu = 170 \)).
+      - \( H_a \): Průměrná výška se liší od 170 cm (\( \mu \neq 170 \)).
+
+  2. **Výpočet Z-statistiky**:
+```{r}
+# Výběrová data
+x_bar <- 172  # Průměr výběru
+mu_0 <- 170   # Populační průměr podle H0
+sigma <- 10   # Populační směrodatná odchylka
+n <- 50       # Velikost výběru
+
+# Z-statistika
+z <- (x_bar - mu_0) / (sigma / sqrt(n))
+z
+```
+
+3. **Najděte kritickou hodnotu a rozhodněte**:
+
+```{r}
+# Kritická hodnota pro 95% interval spolehlivosti (dvoustranný test, alpha = 0.05)
+z_critical <- qnorm(0.975)  # Dvoustranný test => 0.975
+z_critical
+
+# Alternativně: výpočet p-hodnoty
+p_value <- 2 * (1 - pnorm(abs(z)))  # ×2 pro dvoustranný test
+p_value
+
+# Rozhodnutí: zamítnout nebo nezamítnout H0
+if (abs(z) > z_critical) {
+ print("Zamítáme H0: Existuje statisticky významný rozdíl.")
+} else {
+ print("Nezamítáme H0: Neexistuje statisticky významný rozdíl.")
+}
+```
+
+## 5. **Interpretace výsledků**
+
+* Pokud je Z-statistika větší než kritická hodnota (nebo pokud je p-hodnota menší než $\alpha$):
+  * **Zamítáme $H_0$**: To znamená, že existuje důkaz, že populační průměr je **odlišný** od předpokládané hodnoty.
+  * **Český překlad**: Zamítáme nulovou hypotézu – existuje důkaz, že populační průměr je odlišný od předpokládané hodnoty.
+* Pokud je Z-statistika menší než kritická hodnota (nebo pokud je p-hodnota větší než $\alpha$):
+  * **Nezamítáme $H_0$**: Neexistuje **dostatečný důkaz**, že se populační průměr liší od předpokládané hodnoty.
+  * **Český překlad**: Nezamítáme nulovou hypotézu – neexistuje dostatečný důkaz, že populační průměr je odlišný.
+
+## 6. **Slovník pojmů**
+
+| **Anglický termín**            | **Český překlad**              | **Vysvětlení**                                                                        |
+| ------------------------------ | ------------------------------ | ------------------------------------------------------------------------------------- |
+| Null Hypothesis ($H_0$)        | Nulová hypotéza                | Hypotéza, že neexistuje efekt nebo rozdíl.                                            |
+| Alternative Hypothesis ($H_a$) | Alternativní hypotéza          | Hypotéza, že existuje efekt nebo rozdíl.                                              |
+| Z-statistic                    | Z-statistika                   | Testovací statistika použitá při Z-testu.                                             |
+| Significance Level ($\alpha$)  | Hladina významnosti ($\alpha$) | Pravděpodobnost chyby I. druhu – zamítnutí H0, i když je pravdivá.                    |
+| p-value                        | p-hodnota                      | Pravděpodobnost získání daných nebo extrémnějších výsledků, pokud platí H0.           |
+| Critical Value                 | Kritická hodnota               | Hranice, s níž porovnáváme testovací statistiku podle zvolené hladiny významnosti.    |
+| Two-tailed Test                | Oboustranný test               | Test zvažující extrémy v obou částech rozdělení ($H_a: \mu \neq \mu_0$).              |
+| One-tailed Test                | Jednostranný test              | Test zvažující extrémy pouze na jedné straně ($H_a: \mu > \mu_0$ nebo $\mu < \mu_0$). |
+
+## Závěr
+
+* **Testování hypotéz** umožňuje ověřit tvrzení o populačních parametrech pomocí výběrových dat.
+* **Z-test** je vhodný pro velké výběry nebo při znalosti populační směrodatné odchylky.
+* Rozhodnutí o zamítnutí nebo nezamítnutí nulové hypotézy se provádí porovnáním **Z-statistiky** s **kritickou hodnotou** nebo **p-hodnoty** s $\alpha$.
+
+
